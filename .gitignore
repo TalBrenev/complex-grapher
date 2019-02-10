@@ -1,4 +1,4 @@
-/resources/public/js/cljs-out/**
+/resources/public/cljs-out/**
 figwheel_server.log
 pom.xml
 *jar
