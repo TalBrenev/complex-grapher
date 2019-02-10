@@ -7,43 +7,19 @@
   :min-lein-version "2.8.3"
 
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.238"]
-                 [org.clojure/core.async  "0.4.474"]]
-
-  :plugins [[lein-figwheel "0.5.18"]
-            [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
+                 [org.clojure/clojurescript "1.10.339"]]
 
   :source-paths ["src"]
 
-  :cljsbuild {:builds
-              [{:id "dev"
-                :source-paths ["src"]
-                :figwheel {:on-jsload "complex-grapher.core/on-js-reload"
-                           :open-urls ["http://localhost:3449/index.html"]}
-                :compiler {:main complex-grapher.core
-                           :asset-path "js/compiled/out"
-                           :output-to "resources/public/js/compiled/complex_grapher.js"
-                           :output-dir "resources/public/js/compiled/out"
-                           :source-map-timestamp true
-                           :preloads [devtools.preload]}}
-               {:id "min"
-                :source-paths ["src"]
-                :compiler {:output-to "resources/public/js/compiled/complex_grapher.js"
-                           :main complex-grapher.core
-                           :optimizations :advanced
-                           :pretty-print false}}]}
+  :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
+            "fig:build" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
+            "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
+            "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" tmp.test-runner]}
 
-  :figwheel {:http-server-root "public"
-             :server-port 3449
-             :server-ip "127.0.0.1"
-             :css-dirs ["resources/public/css"]
-             :nrepl-port 7888}
-
-  :profiles {:dev {:dependencies [[binaryage/devtools "0.9.9"]
-                                  [figwheel-sidecar "0.5.18"]
+  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.0"]
+                                  [com.bhauman/rebel-readline-cljs "0.1.4"]
                                   [cider/piggieback "0.4.0"]]
-                   :source-paths ["src" "dev"]
                    :plugins [[cider/cider-nrepl "0.20.0"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
-                   :clean-targets ^{:protect false} ["resources/public/js/compiled"
+                   :clean-targets ^{:protect false} ["resources/public/cljs-out"
                                                      :target-path]}})
