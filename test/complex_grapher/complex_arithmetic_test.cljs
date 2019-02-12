@@ -1,10 +1,10 @@
 (ns complex-grapher.complex-arithmetic-test
   (:require [cljs.test :refer [deftest testing is are]]
-            [complex-grapher.test-utils :refer [close?]]
             [complex-grapher.complex-arithmetic :refer [complex-from-cartesian
                                                         complex-from-polar
                                                         re im arg mag
-                                                        add sub mul div]]))
+                                                        add sub mul div]])
+  (:require-macros [complex-grapher.test-utils :refer [close?]]))
 
 (deftest complex-arithmetic
   (testing "create a complex number"
