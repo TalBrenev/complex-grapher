@@ -50,3 +50,34 @@
   (div [this other]
     (complex-from-polar (- (arg this) (arg other))
                         (/ (mag this) (mag other)))))
+
+(extend-type number
+  ComplexArithmetic
+
+  (re [this]
+    this)
+
+  (im [this]
+    0)
+
+  (arg [this]
+    0)
+
+  (mag [this]
+    this)
+
+  (add [this other]
+    (complex-from-cartesian (+ this (re other))
+                            (im other)))
+
+  (sub [this other]
+    (complex-from-cartesian (- this (re other))
+                            (- (im other))))
+
+  (mul [this other]
+    (complex-from-cartesian (* this (re other))
+                            (* this (im other))))
+
+  (div [this other]
+    (complex-from-polar (- (arg other))
+                        (/ this (mag other)))))

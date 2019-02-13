@@ -83,25 +83,65 @@
       (let [z (add (complex-from-cartesian 3 6) (complex-from-cartesian 2.5 -8))]
         (are-close
           (re z) 5.5
-          (im z) -2))))
+          (im z) -2)))
+    (testing "two real numbers"
+      (let [z (add 2.79 3)]
+        (are-close
+          (re z) 5.79
+          (im z) 0)))
+    (testing "a real number and a complex number"
+      (let [z (add -3 (complex-from-cartesian 2 1))]
+        (are-close
+          (re z) -1
+          (im z) 1))))
 
   (testing "subtract"
     (testing "two complex numbers"
       (let [z (sub (complex-from-cartesian 10 4) (complex-from-cartesian -3 2.2))]
         (are-close
           (re z) 13
-          (im z) 1.8))))
+          (im z) 1.8)))
+    (testing "two real numbers"
+      (let [z (sub 10 4)]
+        (are-close
+          (re z) 6
+          (im z) 0)))
+    (testing "a real number and a complex number"
+      (let [z (sub 0.5 (complex-from-cartesian 4 7))]
+        (are-close
+          (re z) -3.5
+          (im z) -7))))
 
   (testing "multiply"
     (testing "two complex numbers"
       (let [z (mul (complex-from-polar 0.22 5) (complex-from-polar 0.3 6))]
         (are-close
           (arg z) 0.52
-          (mag z) 30))))
+          (mag z) 30)))
+    (testing "two real numbers"
+      (let [z (mul 2 2)]
+        (are-close
+          (re z) 4
+          (im z) 0)))
+    (testing "a real number and a complex number"
+      (let [z (mul 2 (complex-from-cartesian 1.5 3.5))]
+        (are-close
+          (re z) 3
+          (im z) 7))))
 
   (testing "divide"
     (testing "two complex numbers"
       (let [z (div (complex-from-polar 0.1 9) (complex-from-polar 0.3 3))]
         (are-close
           (arg z) -0.2
-          (mag z) 3)))))
+          (mag z) 3)))
+    (testing "two real numbers"
+      (let [z (div 10 5)]
+        (are-close
+          (re z) 2
+          (im z) 0)))
+    (testing "a real number and a complex number"
+      (let [z (div (complex-from-cartesian 4 2) 2)]
+        (are-close
+          (re z) 2
+          (im z) 1)))))
