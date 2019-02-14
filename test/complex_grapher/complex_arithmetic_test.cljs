@@ -1,5 +1,6 @@
 (ns complex-grapher.complex-arithmetic-test
   (:require [cljs.test :refer [deftest testing]]
+            [complex-grapher.test-utils]
             [complex-grapher.complex-arithmetic :refer [complex-from-cartesian
                                                         complex-from-polar
                                                         re im arg mag
