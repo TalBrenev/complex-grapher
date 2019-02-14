@@ -1,14 +1,10 @@
 (ns complex-grapher.complex-arithmetic)
 
-(defprotocol ComplexArithmetic "Performs the basic arithmetic of the complex numbers."
+(defprotocol ComplexArithmetic "Perform the basic arithmetic of the complex numbers."
   (re  [this]         "The real part of the complex number.")
   (im  [this]         "The imaginary part of the complex number.")
   (arg [this]         "The argument of the complex number, in radians.")
-  (mag [this]         "The magnitude of the complex number.")
-  (add [this other]   "Adds the given numbers together.")
-  (sub [this other]   "Subtracts the second number from the first.")
-  (mul [this other]   "Multiplies the given numbers together.")
-  (div [this other]   "Divides the first number by the second."))
+  (mag [this]         "The magnitude of the complex number."))
 
 (defrecord ComplexNumber [real imaginary])
 
@@ -21,63 +17,39 @@
 
 (extend-type ComplexNumber
   ComplexArithmetic
-
   (re [this]
     (:real this))
-
   (im [this]
     (:imaginary this))
-
   (arg [this]
     (Math/atan2 (im this) (re this)))
-
   (mag [this]
     (Math/sqrt (+ (Math/pow (re this) 2)
-                  (Math/pow (im this) 2))))
-
-  (add [this other]
-    (complex-from-cartesian (+ (re this) (re other))
-                            (+ (im this) (im other))))
-
-  (sub [this other]
-    (complex-from-cartesian (- (re this) (re other))
-                            (- (im this) (im other))))
-
-  (mul [this other]
-    (complex-from-polar (+ (arg this) (arg other))
-                        (* (mag this) (mag other))))
-
-  (div [this other]
-    (complex-from-polar (- (arg this) (arg other))
-                        (/ (mag this) (mag other)))))
+                  (Math/pow (im this) 2)))))
 
 (extend-type number
   ComplexArithmetic
-
   (re [this]
     this)
-
   (im [this]
     0)
-
   (arg [this]
     0)
-
   (mag [this]
-    this)
+    this))
 
-  (add [this other]
-    (complex-from-cartesian (+ this (re other))
-                            (im other)))
+(defn add [x y]   "Adds the given complex numbers together."
+  (complex-from-cartesian (+ (re x) (re y))
+                          (+ (im x) (im y))))
 
-  (sub [this other]
-    (complex-from-cartesian (- this (re other))
-                            (- (im other))))
+(defn sub [x y]   "Subtracts the second complex number from the first."
+  (complex-from-cartesian (- (re x) (re y))
+                          (- (im x) (im y))))
 
-  (mul [this other]
-    (complex-from-cartesian (* this (re other))
-                            (* this (im other))))
+(defn mul [x y]   "Multiplies the given complex numbers together."
+  (complex-from-polar (+ (arg x) (arg y))
+                      (* (mag x) (mag y))))
 
-  (div [this other]
-    (complex-from-polar (- (arg other))
-                        (/ this (mag other)))))
+(defn div [x y]   "Divides the first complex number by the second."
+  (complex-from-polar (- (arg x) (arg y))
+                      (/ (mag x) (mag y))))
