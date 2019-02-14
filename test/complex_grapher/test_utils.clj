@@ -1,16 +1,6 @@
 (ns complex-grapher.test-utils
   (:require [cljs.test :refer [is are]]))
 
-(def default-delta 0.00001)
-
-(defmacro close?
-  "Check if `x` and `y` are within `delta` of one another.
-  If `delta` is not given, `complex-grapher.test-utils/default-delta` is used instead."
-  ([x y]
-   `(close? ~x ~y ~default-delta))
-  ([x y delta]
-   (list '< (list 'Math/abs (list '- x y)) delta)))
-
 (defmacro is-close
   "Assert that `x` and `y` are within `delta` of one another.
   If `delta` is not given, `complex-grapher.test-utils/default-delta` is used instead."
