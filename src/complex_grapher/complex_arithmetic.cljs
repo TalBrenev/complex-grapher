@@ -1,17 +1,19 @@
 (ns complex-grapher.complex-arithmetic)
 
 (defprotocol ComplexArithmetic "Perform the basic arithmetic of the complex numbers."
-  (re  [this]         "The real part of the complex number.")
-  (im  [this]         "The imaginary part of the complex number.")
-  (arg [this]         "The argument of the complex number, in radians.")
-  (mag [this]         "The magnitude of the complex number."))
+  (re  [this] "The real part of the complex number.")
+  (im  [this] "The imaginary part of the complex number.")
+  (arg [this] "The argument of the complex number, in radians.")
+  (mag [this] "The magnitude of the complex number."))
 
 (defrecord ComplexNumber [real imaginary])
 
 (defn complex-from-cartesian [real imaginary]
+  "Create a complex number by specifying cartesian coordinates."
   (->ComplexNumber real imaginary))
 
 (defn complex-from-polar [argument magnitude]
+  "Create a complex number by specifying polar coordinates."
   (->ComplexNumber (* magnitude (Math/cos argument))
                    (* magnitude (Math/sin argument))))
 
