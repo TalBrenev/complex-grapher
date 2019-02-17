@@ -40,18 +40,18 @@
   (mag [this]
     this))
 
-(defn add [x y]   "Adds the given complex numbers together."
+(defn add [x y] "Adds the given complex numbers together."
   (complex-from-cartesian (+ (re x) (re y))
                           (+ (im x) (im y))))
 
-(defn sub [x y]   "Subtracts the second complex number from the first."
+(defn sub [x y] "Subtracts the second complex number from the first."
   (complex-from-cartesian (- (re x) (re y))
                           (- (im x) (im y))))
 
-(defn mul [x y]   "Multiplies the given complex numbers together."
+(defn mul [x y] "Multiplies the given complex numbers together."
   (complex-from-polar (+ (arg x) (arg y))
                       (* (mag x) (mag y))))
 
-(defn div [x y]   "Divides the first complex number by the second."
+(defn div [x y] "Divides the first complex number by the second."
   (complex-from-polar (- (arg x) (arg y))
                       (/ (mag x) (mag y))))
