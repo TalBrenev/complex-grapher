@@ -19,7 +19,6 @@
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.0"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]
                                   [cider/piggieback "0.4.0"]]
-                   :plugins [[cider/cider-nrepl "0.20.0"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
                    :clean-targets ^{:protect false} ["resources/public/cljs-out"
                                                      :target-path]}})
