@@ -57,3 +57,11 @@
 (defn div [x y] "Divides the first complex number by the second."
   (complex-from-polar (- (arg x) (arg y))
                       (/ (mag x) (mag y))))
+
+(defn pow [x y] "Returns the exponent of the first complex number to the second."
+  (let [a (arg x)
+        b (Math/log (mag x))
+        c (re y)
+        d (im y)]
+    (complex-from-polar (+ (* a c) (* b d))
+                        (Math/pow Math/E (- (* b c) (* a d))))))

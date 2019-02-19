@@ -4,7 +4,8 @@
             [complex-grapher.complex-arithmetic :refer [complex-from-cartesian
                                                         complex-from-polar
                                                         re im arg mag
-                                                        add sub mul div]])
+                                                        add sub mul div
+                                                        pow]])
   (:require-macros [complex-grapher.test-utils :refer [are-close is-complex-close]]))
 
 (deftest complex-arithmetic
@@ -121,4 +122,12 @@
                         (complex-from-cartesian 2 0)))
     (testing "a real number and a complex number"
       (is-complex-close (div (complex-from-cartesian 4 2) 2)
-                        (complex-from-cartesian 2 1)))))
+                        (complex-from-cartesian 2 1))))
+
+  (testing "exponentiate"
+    (testing "two real numbers"
+      (is-complex-close (pow 2 5)
+                        (complex-from-cartesian 32 0)))
+    (testing "two complex numbers"
+      (is-complex-close (pow (complex-from-cartesian 4.65 2.989) (complex-from-cartesian -0.1 4.0101))
+                        (complex-from-cartesian 0.0741635 0.0420816)))))
