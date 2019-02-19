@@ -5,7 +5,8 @@
                                                         complex-from-polar
                                                         re im arg mag
                                                         add sub mul div
-                                                        pow log]])
+                                                        pow log
+                                                        sin cos tan]])
   (:require-macros [complex-grapher.test-utils :refer [are-close is-complex-close]]))
 
 (deftest complex-arithmetic
@@ -137,4 +138,28 @@
                         (complex-from-cartesian 1.252762968 0)))
     (testing "a complex number"
       (is-complex-close (log (complex-from-cartesian -2.5 3))
-                        (complex-from-cartesian 1.36229 2.265535)))))
+                        (complex-from-cartesian 1.36229 2.265535))))
+
+  (testing "calculate the sine of"
+    (testing "a real number"
+      (is-complex-close (sin 2.6)
+                        (complex-from-cartesian 0.51550137182 0)))
+    (testing "a complex number"
+      (is-complex-close (sin (complex-from-cartesian 3 -5))
+                        (complex-from-cartesian 10.47250853 73.46062169))))
+
+  (testing "calculate the cosine of"
+    (testing "a real number"
+      (is-complex-close (cos -1)
+                        (complex-from-cartesian 0.5403023058 0)))
+    (testing "a complex number"
+      (is-complex-close (cos (complex-from-cartesian -0.5 2.2))
+                        (complex-from-cartesian 4.00872 2.13685))))
+
+  (testing "calculate the tangent of"
+    (testing "a real number"
+      (is-complex-close (tan 25)
+                        (complex-from-cartesian -0.13352640702 0)))
+    (testing "a complex number"
+      (is-complex-close (tan (complex-from-cartesian 1 2))
+                        (complex-from-cartesian 0.033812826 1.014793616)))))

@@ -69,3 +69,16 @@
 (defn log [x] "Computes the natural logarithm of the given complex number."
   (complex-from-cartesian (Math/log (mag x))
                           (arg x)))
+
+(defn sin [x] "Computes the sine of the given complex number."
+  (let [a (pow Math/E (mul i x))]
+    (div (sub a (div 1 a)) (mul 2 i))))
+
+(defn cos [x] "Computes the cosine of the given complex number."
+  (let [a (pow Math/E (mul i x))]
+    (div (add a (div 1 a)) 2)))
+
+(defn tan [x] "Computes the tangent of the given complex number."
+  (let [a (pow Math/E (mul i x))
+        b (div 1 a)]
+    (div (sub a b) (mul i (add a b)))))
