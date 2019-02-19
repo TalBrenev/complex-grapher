@@ -65,3 +65,7 @@
         d (im y)]
     (complex-from-polar (+ (* a c) (* b d))
                         (Math/pow Math/E (- (* b c) (* a d))))))
+
+(defn log [x] "Computes the natural logarithm of the given complex number."
+  (complex-from-cartesian (Math/log (mag x))
+                          (arg x)))

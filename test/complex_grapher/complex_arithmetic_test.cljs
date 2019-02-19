@@ -5,7 +5,7 @@
                                                         complex-from-polar
                                                         re im arg mag
                                                         add sub mul div
-                                                        pow]])
+                                                        pow log]])
   (:require-macros [complex-grapher.test-utils :refer [are-close is-complex-close]]))
 
 (deftest complex-arithmetic
@@ -130,4 +130,11 @@
                         (complex-from-cartesian 32 0)))
     (testing "two complex numbers"
       (is-complex-close (pow (complex-from-cartesian 4.65 2.989) (complex-from-cartesian -0.1 4.0101))
-                        (complex-from-cartesian 0.0741635 0.0420816)))))
+                        (complex-from-cartesian 0.0741635 0.0420816))))
+  (testing "take the logarithm of"
+    (testing "a real number"
+      (is-complex-close (log 3.5)
+                        (complex-from-cartesian 1.252762968 0)))
+    (testing "a complex number"
+      (is-complex-close (log (complex-from-cartesian -2.5 3))
+                        (complex-from-cartesian 1.36229 2.265535)))))
