@@ -17,6 +17,8 @@
   (->ComplexNumber (* magnitude (Math/cos argument))
                    (* magnitude (Math/sin argument))))
 
+(def i (complex-from-cartesian 0 1))
+
 (extend-type ComplexNumber
   ComplexArithmetic
   (re [this]
