@@ -102,6 +102,7 @@
 
     (testing "an expression with lots of functions and variables"
       (is (= (parse "isini(ipii)z+cos(log(tan(e^z)))")
-             [add [mul [mul i [sin i]]
-                       [mul [mul i Math/PI] i]]
+             [add [mul [mul [mul i [sin i]]
+                            [mul [mul i Math/PI] i]]
+                       "z"]
                   [cos [log [tan [pow Math/E "z"]]]]])))))
