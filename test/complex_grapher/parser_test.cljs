@@ -25,7 +25,7 @@
              Math/E)))
 
     (testing "pi"
-      (is (= parse "pi"
+      (is (= (parse "pi")
              Math/PI)))
 
     (testing "addition of two numbers"
