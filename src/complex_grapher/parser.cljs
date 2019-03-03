@@ -36,10 +36,26 @@
     (tokenize-starting-number expression)
     (first (filter #(s/starts-with? expression (:token %)) tokens))))
 
-(defn tokenize [expression]
-  (let [expression (strip-starting-whitespace expression)]
-    (if-let [token (first-token expression)]
-      (lazy-seq (cons token (tokenize (subs expression (count (:token token)))))))))
+(def multiplication-token (first (filter #(= (:token %) "*") tokens)))
+(defn insert-implicit-multiplication [previous-token token tokens]
+  (if (and (some #(= (:type previous-token) %)
+                 [:number :right-bracket])
+           (some #(= (:type token) %)
+                 [:number :left-bracket :function]))
+    (lazy-seq (cons multiplication-token tokens))
+    tokens))
+
+(defn tokenize
+  ([expression]
+   (tokenize nil expression))
+  ([previous-token expression]
+   (let [expression (strip-starting-whitespace expression)]
+     (if-let [token (first-token expression)]
+       (->> (subs expression (count (:token token)))
+            (tokenize token)
+            (cons token)
+            (insert-implicit-multiplication previous-token token)
+            lazy-seq)))))
 
 (defn apply-top-operator [ast-stack operator-stack]
   (let [operator (first operator-stack)]
