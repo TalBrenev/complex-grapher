@@ -38,9 +38,8 @@
 
 (defn tokenize [expression]
   (let [expression (strip-starting-whitespace expression)]
-    (if-not (empty? expression)
-      (let [token (first-token expression)]
-        (lazy-seq (cons token (tokenize (subs expression (count (:token token))))))))))
+    (if-let [token (first-token expression)]
+      (lazy-seq (cons token (tokenize (subs expression (count (:token token)))))))))
 
 (defn apply-top-operator [ast-stack operator-stack]
   (let [operator (first operator-stack)]
