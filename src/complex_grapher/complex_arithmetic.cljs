@@ -58,6 +58,9 @@
   (complex-from-polar (- (arg x) (arg y))
                       (/ (mag x) (mag y))))
 
+(defn negate [x] "Returns the additive inverse of the complex number."
+  (sub 0 x))
+
 (defn pow [x y] "Returns the exponent of the first complex number to the second."
   (let [a (arg x)
         b (Math/log (mag x))

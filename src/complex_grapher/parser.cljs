@@ -1,7 +1,7 @@
 (ns complex-grapher.parser
   (:require [complex-grapher.complex-arithmetic :refer [i re im arg mag
                                                         add sub mul div
-                                                        pow log
+                                                        negate pow log
                                                         sin cos tan]]
             [clojure.string :as s]))
 
@@ -12,6 +12,7 @@
              {:token "tan"   :type :function   :value tan}
              {:token "log"   :type :function   :value log}
              {:token "ln"    :type :function   :value log}
+             {:token "-"     :type :function   :value negate}
              {:token "z"     :type :number     :value "z"}
              {:token "e"     :type :number     :value Math/E}
              {:token "pi"    :type :number     :value Math/PI}
@@ -31,10 +32,14 @@
      :type  :number
      :value (js/parseFloat number)}))
 
-(defn first-token [expression]
-  (or
-    (tokenize-starting-number expression)
-    (first (filter #(s/starts-with? expression (:token %)) tokens))))
+(defn first-token [previous-token expression]
+  (or (tokenize-starting-number expression)
+      (let [found-tokens (filter #(s/starts-with? expression (:token %)) tokens)]
+        (if (= (count found-tokens) 1)
+          (first found-tokens)
+          (if (some #(= (:type previous-token) %) [nil :operator :left-bracket])
+            (first (filter #(= (:type %) :function) found-tokens))
+            (first (filter #(= (:type %) :operator) found-tokens)))))))
 
 (def multiplication-token (first (filter #(= (:token %) "*") tokens)))
 (defn insert-implicit-multiplication [previous-token token tokens]
@@ -50,7 +55,7 @@
    (tokenize nil expression))
   ([previous-token expression]
    (let [expression (strip-starting-whitespace expression)]
-     (if-let [token (first-token expression)]
+     (if-let [token (first-token previous-token expression)]
        (->> (subs expression (count (:token token)))
             (tokenize token)
             (cons token)

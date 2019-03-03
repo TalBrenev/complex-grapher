@@ -2,7 +2,7 @@
   (:require [cljs.test :refer [deftest testing is]]
             [complex-grapher.complex-arithmetic :refer [i re im arg mag
                                                         add sub mul div
-                                                        pow log
+                                                        negate pow log
                                                         sin cos tan]]
             [complex-grapher.parser :refer [parse]]))
 
@@ -72,7 +72,7 @@
 
     (testing "the negation of a number"
       (is (= (parse "-i")
-             [sub 0 i])))
+             [negate i])))
 
     (testing "an expression with no brackets"
       (is (= (parse "1+5^e-89i+pi/2^z")
