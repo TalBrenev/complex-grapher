@@ -105,3 +105,11 @@
                [(list) (list)])
        (apply-remaining-operators)
        (first)))
+
+(defn evaluate
+  ([ast]
+   (evaluate ast {}))
+  ([ast variables]
+   (if (list? ast)
+     (apply (first ast) (map #(evaluate % variables) (rest ast)))
+     (or (get variables ast) ast))))
