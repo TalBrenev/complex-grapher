@@ -3,6 +3,7 @@
                                                         add sub mul div
                                                         negate pow log
                                                         sin cos tan]]
+            [complex-grapher.utils :refer [find-first in?]]
             [clojure.string :as s]))
 
 (def tokens [{:token "("     :type :left-bracket}
@@ -37,16 +38,14 @@
       (let [found-tokens (filter #(s/starts-with? expression (:token %)) tokens)]
         (if (= (count found-tokens) 1)
           (first found-tokens)
-          (if (some #(= (:type previous-token) %) [nil :operator :left-bracket])
-            (first (filter #(= (:type %) :function) found-tokens))
-            (first (filter #(= (:type %) :operator) found-tokens)))))))
+          (if (in? (:type previous-token) [nil :operator :left-bracket])
+            (find-first #(= (:type %) :function) found-tokens)
+            (find-first #(= (:type %) :operator) found-tokens))))))
 
-(def multiplication-token (first (filter #(= (:token %) "*") tokens)))
+(def multiplication-token (find-first #(= (:token %) "*") tokens))
 (defn insert-implicit-multiplication [previous-token token tokens]
-  (if (and (some #(= (:type previous-token) %)
-                 [:number :right-bracket])
-           (some #(= (:type token) %)
-                 [:number :left-bracket :function]))
+  (if (and (in? (:type previous-token) [:number :right-bracket])
+           (in? (:type token) [:number :left-bracket :function]))
     (lazy-seq (cons multiplication-token tokens))
     tokens))
 
