@@ -1,5 +1,6 @@
 (ns complex-grapher.parser
-  (:require [complex-grapher.complex-arithmetic :refer [i re im arg mag
+  (:require [complex-grapher.complex-arithmetic :refer [ComplexArithmetic
+                                                        i re im arg mag
                                                         add sub mul div
                                                         negate pow log
                                                         sin cos tan]]
@@ -115,6 +116,14 @@
                [(list) (list)])
        (apply-remaining-operators)
        (first)))
+
+(defn prune [ast]
+  (if-not (seq? ast)
+    ast
+    (let [children (map prune (rest ast))]
+      (if (every? #(satisfies? ComplexArithmetic %) children)
+        (apply (first ast) children)
+        (cons (first ast) children)))))
 
 (defn evaluate
   ([ast]
