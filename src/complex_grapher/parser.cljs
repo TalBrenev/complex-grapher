@@ -120,6 +120,6 @@
   ([ast]
    (evaluate ast {}))
   ([ast variables]
-   (if (list? ast)
+   (if (seq? ast)
      (apply (first ast) (map #(evaluate % variables) (rest ast)))
      (or (get variables ast) ast))))
