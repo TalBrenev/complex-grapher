@@ -38,13 +38,15 @@
      :value (js/parseFloat number)}))
 
 (defn first-token [previous-token expression]
-  (or (tokenize-starting-number expression)
-      (let [found-tokens (filter #(s/starts-with? expression (:token %)) tokens)]
-        (if (= (count found-tokens) 1)
-          (first found-tokens)
-          (if (in? (:type previous-token) [nil :operator :left-bracket])
-            (find-first #(= (:type %) :function) found-tokens)
-            (find-first #(= (:type %) :operator) found-tokens))))))
+  (if-not (empty? expression)
+    (or (tokenize-starting-number expression)
+        (let [found-tokens (filter #(s/starts-with? expression (:token %)) tokens)]
+          (case (count found-tokens)
+            0 (throw "Invalid Expression")
+            1 (first found-tokens)
+            2 (if (in? (:type previous-token) [nil :operator :left-bracket])
+                (find-first #(= (:type %) :function) found-tokens)
+                (find-first #(= (:type %) :operator) found-tokens)))))))
 
 (def multiplication-token (find-first #(= (:token %) "*") tokens))
 (defn insert-implicit-multiplication [previous-token token tokens]
@@ -68,21 +70,29 @@
 (defn apply-top-operator [ast-stack operator-stack]
   (let [operator (first operator-stack)]
     [(case (:type operator)
-      :function (cons (list (:value operator) (first ast-stack))
-                      (rest ast-stack))
-      :operator (cons (list (:value operator) (second ast-stack) (first ast-stack))
-                      (nthrest ast-stack 2)))
+      :function (if (first ast-stack)
+                  (cons (list (:value operator) (first ast-stack))
+                        (rest ast-stack))
+                  (throw "Invalid Expression"))
+      :operator (if (second ast-stack)
+                  (cons (list (:value operator) (second ast-stack) (first ast-stack))
+                        (nthrest ast-stack 2))
+                  (throw "Invalid Expression")))
      (rest operator-stack)]))
 
 (defn apply-remaining-operators [[ast-stack operator-stack]]
   (if (empty? operator-stack)
     ast-stack
-    (recur (apply-top-operator ast-stack operator-stack))))
+    (if (= (:type (first operator-stack)) :left-bracket)
+      (throw "Invalid Expression")
+      (recur (apply-top-operator ast-stack operator-stack)))))
 
 (defn apply-right-bracket [[ast-stack operator-stack]]
-  (if (= (:type (first operator-stack)) :left-bracket)
-    [ast-stack (rest operator-stack)]
-    (recur (apply-top-operator ast-stack operator-stack))))
+  (if (empty? operator-stack)
+    (throw "Invalid Expression")
+    (if (= (:type (first operator-stack)) :left-bracket)
+      [ast-stack (rest operator-stack)]
+      (recur (apply-top-operator ast-stack operator-stack)))))
 
 (defn add-operator-to-stack [[ast-stack operator-stack] operator]
   (let [token (first operator-stack)]
