@@ -8,6 +8,10 @@
 
 (def tokens [{:token "("     :type :left-bracket}
              {:token ")"     :type :right-bracket}
+             {:token "re"    :type :function   :value re}
+             {:token "im"    :type :function   :value im}
+             {:token "arg"   :type :function   :value arg}
+             {:token "mag"   :type :function   :value mag}
              {:token "sin"   :type :function   :value sin}
              {:token "cos"   :type :function   :value cos}
              {:token "tan"   :type :function   :value tan}

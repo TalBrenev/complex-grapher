@@ -74,6 +74,22 @@
       (is (= (parse "-i")
              [negate i])))
 
+    (testing "the real part of a number"
+      (is (= (parse "re(z)")
+             [re "z"])))
+
+    (testing "the imaginary part of a number"
+      (is (= (parse "im(i)")
+             [im i])))
+
+    (testing "the argument of a number"
+      (is (= (parse "arge")
+             [arg Math/E])))
+
+    (testing "the magnitude of a number"
+      (is (= (parse "mag z")
+             [mag "z"])))
+
     (testing "an expression with no brackets"
       (is (= (parse "1+5^e-89i+pi/2^z")
              [add [sub [add 1 [pow 5 Math/E]]
