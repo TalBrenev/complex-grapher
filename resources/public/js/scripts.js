@@ -1,13 +1,5 @@
 //------------------- MISCELLANEOUS SCRIPTS -------------------//
 
-//Fade in page contents on load
-$(document).ready(function()
-{
-    $(".title").fadeIn(1000);
-    $(".main").delay(1500).fadeIn(1000);
-    $(".footnote").delay(3000).fadeIn(2000);
-});
-
 //Open/close controls on mobile
 function ToggleControls()
 {

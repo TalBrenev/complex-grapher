@@ -28,7 +28,6 @@ h1
 .footnote
 {
     text-align: center;
-    display: none;
     color: #bbb;
 }
 
@@ -47,7 +46,6 @@ h1
     font-size: 0px;
     height: 80vh;
     min-height: 550px;
-    display: none;
     position: relative;
     box-shadow: 0 0 15px #333
 }
