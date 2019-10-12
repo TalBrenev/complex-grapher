@@ -2,7 +2,7 @@
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add arg mag]]
               [complex-grapher.canvas :refer [draw fix-size width height]]
               [complex-grapher.parser :refer [parse prune evaluate]]
-              [complex-grapher.color  :refer [hsv->rgb]]))
+              [complex-grapher.graph :refer [graph]]))
 
 (enable-console-print!)
 
@@ -30,37 +30,23 @@
       (.getElementById "function")
       (.-value)))
 
-(defn arg->hue [a]
-  (Math/floor (* (+ a Math/PI) (/ Math/PI) 180)))
-
-(defn mag->val [m modulus]
-  (let [v (/ (mod m modulus) modulus)]
-    (if (> (mod m (* 2 modulus)) modulus)
-      (- 1 v)
-      v)))
-
-(defn graph []
-  (let [{:keys [centre zoom]} @graph-state
-        start   (top-left-corner centre zoom)
-        modulus (get-modulus)
-        ast     (-> (get-function) (parse) (prune))]
-    (draw canvas-id (map
-                      (fn [y]
-                        (map
-                          (fn [x]
-                            (let [z  (add start (complex-from-cartesian (* zoom x) (- (* zoom y))))
-                                  fz (evaluate ast {"z" z})]
-                              (hsv->rgb {:h (arg->hue (arg fz))
-                                         :s 1
-                                         :v (mag->val (mag fz) modulus)})))
-                          (range (width canvas-id))))
-                      (range (height canvas-id))))))
+(defn draw-graph []
+  (let [{:keys [centre zoom]} @graph-state]
+    (draw
+      canvas-id
+      (graph
+        (top-left-corner centre zoom)
+        (width canvas-id)
+        (height canvas-id)
+        zoom
+        (get-modulus)
+        (-> (get-function) (parse) (prune))))))
 
 (defn setup []
   (fix-size canvas-id)
   (-> js/document
       (.getElementById "graphbutton")
       (.-firstChild)
-      (.addEventListener "click" graph)))
+      (.addEventListener "click" draw-graph)))
 
 (.addEventListener js/window "load" setup)
