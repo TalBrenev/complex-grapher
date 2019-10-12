@@ -12,6 +12,14 @@
       (- 1 v)
       v)))
 
+(defn point-color [z ast modulus]
+  "Returns the color of the graph of `ast` at a point `z`. The returned value
+  is a hash with keys `:r`, `:g`, and `:b`."
+  (let [fz (evaluate ast {"z" z})]
+       (hsv->rgb {:h (arg->hue (arg fz))
+                  :s 1
+                  :v (mag->val (mag fz) modulus)})))
+
 (defn graph [start width height zoom modulus ast]
   "Given:
   - `start`, a complex number representing the top-left corner of the graph,
@@ -25,10 +33,8 @@
     (fn [y]
       (map
         (fn [x]
-          (let [z  (add start (complex-from-cartesian (* zoom x) (- (* zoom y))))
-                fz (evaluate ast {"z" z})]
-            (hsv->rgb {:h (arg->hue (arg fz))
-                       :s 1
-                       :v (mag->val (mag fz) modulus)})))
+          (point-color (add start (complex-from-cartesian (* zoom x) (- (* zoom y))))
+                       ast
+                       modulus))
         (range width)))
     (range height)))
