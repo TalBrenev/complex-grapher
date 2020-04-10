@@ -1,15 +1,14 @@
 (ns complex-grapher.core
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add arg mag]]
-              [complex-grapher.canvas :refer [draw fix-size width height]]
-              [complex-grapher.parser :refer [parse prune evaluate]]
-              [complex-grapher.graph :refer [graph]]))
+              [complex-grapher.canvas :refer [width height]]
+              [complex-grapher.webgl :refer [draw create-webgl-context]]))
 
 (enable-console-print!)
 
+(def canvas-id "canvas")
+
 (defonce graph-state (atom {:centre (complex-from-cartesian 0 0)
                             :zoom   0.01}))
-
-(def canvas-id "canvas")
 
 (defn top-left-corner [centre zoom]
   (add centre (complex-from-cartesian (- (* 0.5 zoom (width canvas-id)))
@@ -31,19 +30,9 @@
       (.-value)))
 
 (defn draw-graph []
-  (let [{:keys [centre zoom]} @graph-state]
-    (draw
-      canvas-id
-      (graph
-        (top-left-corner centre zoom)
-        (width canvas-id)
-        (height canvas-id)
-        zoom
-        (get-modulus)
-        (-> (get-function) (parse) (prune))))))
+  (draw (create-webgl-context canvas-id)))
 
 (defn setup []
-  (fix-size canvas-id)
   (-> js/document
       (.getElementById "graphbutton")
       (.-firstChild)
