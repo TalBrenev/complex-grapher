@@ -10,10 +10,14 @@
 
 (def vs-src
   "attribute vec4 aVertexPosition;
-   void main() {  gl_Position = aVertexPosition; }")
+   varying highp float x;
+   varying highp float y;
+   void main() {  gl_Position = aVertexPosition; x = aVertexPosition[0]; y = aVertexPosition[1]; }")
 
 (def fs-src
-  "void main() { gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0); }")
+  "varying highp float x;
+   varying highp float y;
+   void main() { gl_FragColor = vec4(x, 0.0, y, 1.0); }")
 
 (defn create-shader [gl type src]
   (let [shader (.createShader gl type)]
