@@ -124,7 +124,7 @@
 (defn evaluate
   ([ast]
    (evaluate ast {}))
-  ([ast variables]
+  ([ast z]
    (if (map? ast)
-     (or (get variables (:value ast)) (:value ast))
-     (apply (:value (first ast)) (map #(evaluate % variables) (rest ast))))))
+     (if (= (:value ast) "z") z (:value ast))
+     (apply (:value (first ast)) (map #(evaluate % z) (rest ast))))))
