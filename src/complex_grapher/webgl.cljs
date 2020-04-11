@@ -41,9 +41,27 @@
      }
    }
 
+   highp float arg(highp vec2 z) {
+     return atan(z[1], z[0]);
+   }
+
+   highp float mag(highp vec2 z) {
+     return length(z);
+   }
+
    void main()
    {
-     gl_FragColor = hsvToRgb((x+1.0)*180.0, 1.0, (y+1.0)/2.0);
+     highp vec2 z = vec2(x, y);
+
+     highp vec2 f = z;
+
+     highp float modulus = 0.5;
+     highp float h = floor(degrees(arg(z))) + 180.0;
+     highp float v = mod(mag(z), modulus) / modulus;
+     if (mod(mag(z), 2.0*modulus) > modulus) {
+       v = 1.0 - v;
+     }
+     gl_FragColor = hsvToRgb(h, 1.0, v);
    }
    ")
 
