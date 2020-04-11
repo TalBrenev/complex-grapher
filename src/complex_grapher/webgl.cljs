@@ -26,7 +26,7 @@
                                    (:token (first ast)))))]
       (str funcName "(" (s/join "," (map ast->glsl (rest ast))) ")"))))
 
-(defn fs-src [ast modulus top-left-x top-left-y bottom-right-x bottom-right-y]
+(defn fs-src [ast modulus left-x right-x top-y bottom-y]
   (str "
    varying highp float x;
    varying highp float y;
@@ -157,8 +157,8 @@
    void main()
    {
      highp vec2 z = vec2(
-       float("(/ (- bottom-right-x top-left-x) 2)") * x + float("(/ (+ top-left-x bottom-right-x) 2)"),
-       float("(/ (- bottom-right-y top-left-y) 2)") * y + float("(/ (+ top-left-y bottom-right-y) 2)"));
+       float("(/ (- right-x left-x) 2)") * x + float("(/ (+ left-x right-x) 2)"),
+       float("(/ (- bottom-y top-y) 2)") * y + float("(/ (+ top-y bottom-y) 2)"));
 
      highp vec2 f = "(ast->glsl ast)";
 
@@ -200,9 +200,9 @@
     (.bufferData gl (.-ARRAY_BUFFER gl) (js/Float32Array. #js [-1 1 1 1 -1 -1 1 -1]) (.-STATIC_DRAW gl))
     buffer))
 
-(defn draw [canvas-id ast modulus top-left-x top-left-y bottom-right-x bottom-right-y]
+(defn draw [canvas-id ast modulus left-x right-x top-y bottom-y]
   (let [gl (create-context canvas-id)
-        program (create-shader-program gl vs-src (fs-src ast modulus top-left-x top-left-y bottom-right-x bottom-right-y))
+        program (create-shader-program gl vs-src (fs-src ast modulus left-x right-x top-y bottom-y))
         buffer (create-buffer gl)]
     (.clear gl (.-COLOR_BUFFER_BIT gl))
     (.bindBuffer gl (.-ARRAY_BUFFER gl) buffer)

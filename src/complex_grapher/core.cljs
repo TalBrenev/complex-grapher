@@ -30,8 +30,8 @@
           (parse function)
           modulus
           (re top-left)
-          (im top-left)
           (re bottom-right)
+          (im top-left)
           (im bottom-right))))
 
 (defn setup []
