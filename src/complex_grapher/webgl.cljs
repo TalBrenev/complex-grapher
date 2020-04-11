@@ -50,7 +50,9 @@
 
    void main()
    {
-     highp vec2 z = vec2(float("(/ (- bottom-right-x top-left-x) 2)") * x + float("(/ (+ top-left-x bottom-right-x) 2)"), float("(/ (- bottom-right-y top-left-y) 2)") * y + float("(/ (+ top-left-y bottom-right-y) 2)"));
+     highp vec2 z = vec2(
+       float("(/ (- bottom-right-x top-left-x) 2)") * x + float("(/ (+ top-left-x bottom-right-x) 2)"),
+       float("(/ (- bottom-right-y top-left-y) 2)") * y + float("(/ (+ top-left-y bottom-right-y) 2)"));
 
      highp vec2 f = z;
 
