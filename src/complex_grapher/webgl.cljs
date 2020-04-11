@@ -182,6 +182,7 @@
   (let [shader (.createShader gl type)]
     (.shaderSource gl shader src)
     (.compileShader gl shader)
+    ;(.log js/console (.getShaderInfoLog gl shader))
     shader))
 
 (defn create-shader-program [gl vs-src fs-src]
