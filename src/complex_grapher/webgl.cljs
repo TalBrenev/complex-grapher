@@ -1,11 +1,5 @@
 (ns complex-grapher.webgl)
 
-(defn create-context [canvas-id]
-  (let [gl (-> (.getElementById js/document canvas-id)
-               (.getContext "webgl"))]
-    (.clearColor gl 0 0 0 1)
-    gl))
-
 (def vs-src
   "attribute vec4 aVertexPosition;
    varying highp float x;
@@ -153,6 +147,12 @@
      gl_FragColor = hsvToRgb(h, 1.0, v);
    }
    "))
+
+(defn create-context [canvas-id]
+  (let [gl (-> (.getElementById js/document canvas-id)
+               (.getContext "webgl"))]
+    (.clearColor gl 0 0 0 1)
+    gl))
 
 (defn create-shader [gl type src]
   (let [shader (.createShader gl type)]
