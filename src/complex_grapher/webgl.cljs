@@ -48,18 +48,106 @@
      return length(z);
    }
 
+   highp vec2 toCart(highp float a, highp float m) {
+     return vec2(m*cos(a), m*sin(a));
+   }
+
+   highp vec2 compRe(highp vec2 z) {
+     return vec2(z[0], 0.0);
+   }
+
+   highp vec2 compIm(highp vec2 z) {
+     return vec2(z[1], 0.0);
+   }
+
+   highp vec2 compArg(highp vec2 z) {
+     return vec2(arg(z), 0.0);
+   }
+
+   highp vec2 compMag(highp vec2 z) {
+     return vec2(mag(z), 0.0);
+   }
+
+   highp vec2 compAdd(highp vec2 z1, highp vec2 z2) {
+     return vec2(z1[0] + z2[0], z1[1] + z2[1]);
+   }
+
+   highp vec2 compSub(highp vec2 z1, highp vec2 z2) {
+     return vec2(z1[0] - z2[0], z1[1] - z2[1]);
+   }
+
+   highp vec2 compMul(highp vec2 z1, highp vec2 z2) {
+     return toCart(arg(z1)+arg(z2), mag(z1)*mag(z2));
+   }
+
+   highp vec2 compDiv(highp vec2 z1, highp vec2 z2) {
+     if (mag(z2) == 0.0) {
+       return vec2(0.0, 0.0);
+     }
+     else {
+       return toCart(arg(z1)-arg(z2), mag(z1)/mag(z2));
+     }
+   }
+
+   highp vec2 compNegate(highp vec2 z) {
+     return compSub(vec2(0.0, 0.0), z);
+   }
+
+   highp vec2 compPow(highp vec2 z1, highp vec2 z2) {
+     if (mag(z2) == 0.0) {
+       return vec2(0.0, 0.0);
+     }
+     else {
+       highp float a = arg(z1);
+       highp float b = log(mag(z1));
+       highp float c = z2[0];
+       highp float d = z2[1];
+       return toCart(a*c + b*d, exp(b*c - a*d));
+     }
+   }
+
+   highp vec2 compSin(highp vec2 z) {
+     highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
+     return compDiv(compSub(a, compDiv(vec2(1.0,0.0), a)), compMul(vec2(2.0,0.0), vec2(0.0,1.0)));
+   }
+
+   highp vec2 compCos(highp vec2 z) {
+     highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
+     return compDiv(compAdd(a, compDiv(vec2(1.0,0.0), a)), vec2(2.0,0.0));
+   }
+
+   highp vec2 compTan(highp vec2 z) {
+     highp vec2 s = compSin(z);
+     highp vec2 c = compCos(z);
+     if (mag(c) == 0.0) {
+       return vec2(0.0, 0.0);
+     }
+     else {
+       return compDiv(s, c);
+     }
+   }
+
+   highp vec2 compLog(highp vec2 z) {
+     if (mag(z) == 0.0) {
+       return vec2(0.0, 0.0);
+     }
+     else {
+       return vec2(log(mag(z)), arg(z));
+     }
+   }
+
    void main()
    {
      highp vec2 z = vec2(
        float("(/ (- bottom-right-x top-left-x) 2)") * x + float("(/ (+ top-left-x bottom-right-x) 2)"),
        float("(/ (- bottom-right-y top-left-y) 2)") * y + float("(/ (+ top-left-y bottom-right-y) 2)"));
 
-     highp vec2 f = z;
+     highp vec2 f = compLog(z);
 
      highp float modulus = float(" modulus ");
-     highp float h = -floor(degrees(arg(z))) + 180.0;
-     highp float v = mod(mag(z), modulus) / modulus;
-     if (mod(mag(z), 2.0*modulus) > modulus) {
+     highp float h = -floor(degrees(arg(f))) + 180.0;
+     highp float v = mod(mag(f), modulus) / modulus;
+     if (mod(mag(f), 2.0*modulus) > modulus) {
        v = 1.0 - v;
      }
      gl_FragColor = hsvToRgb(h, 1.0, v);
