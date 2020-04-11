@@ -107,7 +107,9 @@
 (defn parse [expression]
   (if (empty? expression)
     (throw "Invalid Expression"))
-  (->> (tokenize expression)
+  (->> expression
+       (s/lower-case)
+       (tokenize)
        (reduce (fn [[ast-stack operator-stack] token]
                  (case (:type token)
                    :number        [(cons token ast-stack) operator-stack]
