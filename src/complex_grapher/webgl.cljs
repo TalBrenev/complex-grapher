@@ -14,8 +14,9 @@
    varying highp float y;
    void main() {  gl_Position = aVertexPosition; x = aVertexPosition[0]; y = aVertexPosition[1]; }")
 
-(def fs-src
-  "varying highp float x;
+(defn fs-src [modulus]
+  (str "
+   varying highp float x;
    varying highp float y;
 
    highp vec4 hsvToRgb(highp float h, highp float s, highp float v) {
@@ -55,7 +56,7 @@
 
      highp vec2 f = z;
 
-     highp float modulus = 0.5;
+     highp float modulus = " modulus ";
      highp float h = floor(degrees(arg(z))) + 180.0;
      highp float v = mod(mag(z), modulus) / modulus;
      if (mod(mag(z), 2.0*modulus) > modulus) {
@@ -63,7 +64,7 @@
      }
      gl_FragColor = hsvToRgb(h, 1.0, v);
    }
-   ")
+   "))
 
 (defn create-shader [gl type src]
   (let [shader (.createShader gl type)]
@@ -86,9 +87,9 @@
     (.bufferData gl (.-ARRAY_BUFFER gl) (js/Float32Array. #js [-1 1 1 1 -1 -1 1 -1]) (.-STATIC_DRAW gl))
     buffer))
 
-(defn draw [canvas-id]
+(defn draw [canvas-id modulus]
   (let [gl (create-context canvas-id)
-        program (create-shader-program gl vs-src fs-src)
+        program (create-shader-program gl vs-src (fs-src modulus))
         buffer (create-buffer gl)]
     (.clear gl (.-COLOR_BUFFER_BIT gl))
     (.bindBuffer gl (.-ARRAY_BUFFER gl) buffer)

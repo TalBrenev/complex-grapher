@@ -30,7 +30,8 @@
       (.-value)))
 
 (defn draw-graph []
-  (draw canvas-id))
+  (let [{:keys [centre zoom]} @graph-state]
+    (draw canvas-id (get-modulus))))
 
 (defn setup []
   (-> js/document
