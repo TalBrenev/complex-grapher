@@ -3,7 +3,7 @@
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.canvas :refer [fix-size width height]]
               [complex-grapher.webgl :refer [draw]]
-              [complex-grapher.utils :refer [get-value set-value add-event-listener]]))
+              [complex-grapher.utils :refer [get-element get-value set-value add-event-listener]]))
 
 (enable-console-print!)
 
@@ -22,17 +22,27 @@
   (add centre (complex-from-cartesian (* 0.5 zoom (width canvas-id))
                                       (- (* 0.5 zoom (height canvas-id))))))
 
+(defn show-error-overlay []
+  (set! (.-style (get-element "error")) "opacity: 1"))
+
+(defn hide-error-overlay []
+  (set! (.-style (get-element "error")) "opacity: 0"))
+
 (defn draw-graph [state]
-  (let [{:keys [centre zoom function modulus]} state
-        top-left (top-left-corner centre zoom)
-        bottom-right (bottom-right-corner centre zoom)]
-    (draw canvas-id
-          (parse function)
-          modulus
-          (re top-left)
-          (re bottom-right)
-          (im top-left)
-          (im bottom-right))))
+  (try
+    (let [{:keys [centre zoom function modulus]} state
+          top-left (top-left-corner centre zoom)
+          bottom-right (bottom-right-corner centre zoom)]
+      (draw canvas-id
+            (parse function)
+            modulus
+            (re top-left)
+            (re bottom-right)
+            (im top-left)
+            (im bottom-right))
+      (hide-error-overlay))
+    (catch :default e
+      (show-error-overlay))))
 
 (defn setup []
   (fix-size canvas-id)
