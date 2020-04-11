@@ -57,7 +57,7 @@
      highp vec2 f = z;
 
      highp float modulus = float(" modulus ");
-     highp float h = floor(degrees(arg(z))) + 180.0;
+     highp float h = -floor(degrees(arg(z))) + 180.0;
      highp float v = mod(mag(z), modulus) / modulus;
      if (mod(mag(z), 2.0*modulus) > modulus) {
        v = 1.0 - v;
