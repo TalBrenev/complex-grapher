@@ -1,5 +1,5 @@
 (ns complex-grapher.core
-    (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add sub mul re im i]]
+    (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian complex->str add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.webgl :refer [draw]]
               [complex-grapher.utils :refer [get-element get-value set-value add-event-listener width height fix-size]]))
@@ -35,6 +35,8 @@
      (let [{:keys [centre zoom function modulus]} state
            top-left (top-left-corner centre zoom)
            bottom-right (bottom-right-corner centre zoom)]
+       (set! (.-innerText (get-element "topleft")) (complex->str top-left))
+       (set! (.-innerText (get-element "bottomright")) (complex->str bottom-right))
        (draw canvas-id
              (parse function)
              modulus

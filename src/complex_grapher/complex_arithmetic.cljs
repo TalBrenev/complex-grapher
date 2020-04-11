@@ -1,4 +1,6 @@
-(ns complex-grapher.complex-arithmetic)
+(ns complex-grapher.complex-arithmetic
+  (:require [goog.string :as gstring]
+            [goog.string.format]))
 
 (defprotocol ComplexArithmetic "Perform the basic arithmetic of the complex numbers."
   (re  [this] "The real part of the complex number.")
@@ -16,6 +18,11 @@
   "Create a complex number by specifying polar coordinates."
   (->ComplexNumber (* magnitude (Math/cos argument))
                    (* magnitude (Math/sin argument))))
+
+(defn complex->str [z]
+  (if (pos? (im z))
+    (gstring/format "%.3f + %.3fi" (re z) (im z))
+    (gstring/format "%.3f - %.3fi" (re z) (- (im z)))))
 
 (def i (complex-from-cartesian 0 1))
 
