@@ -17,7 +17,35 @@
 (def fs-src
   "varying highp float x;
    varying highp float y;
-   void main() { gl_FragColor = vec4(x, 0.0, y, 1.0); }")
+
+   highp vec4 hsvToRgb(highp float h, highp float s, highp float v) {
+     highp float c = s * v;
+     highp float x = c * (1.0 - abs(mod(h/60.0, 2.0) - 1.0));
+     if (0.0 <= h && h <= 60.0) {
+       return vec4(c, x, 0.0, 1.0);
+     }
+     else if (0.0 <= h && h <= 120.0) {
+       return vec4(x, c, 0.0, 1.0);
+     }
+     else if (120.0 <= h && h <= 180.0) {
+       return vec4(0.0, c, x, 1.0);
+     }
+     else if (180.0 <= h && h <= 240.0) {
+       return vec4(0.0, x, c, 1.0);
+     }
+     else if (240.0 <= h && h <= 300.0) {
+       return vec4(x, 0.0, c, 1.0);
+     }
+     else {
+       return vec4(c, 0.0, x, 1.0);
+     }
+   }
+
+   void main()
+   {
+     gl_FragColor = hsvToRgb((x+1.0)*180.0, 1.0, (y+1.0)/2.0);
+   }
+   ")
 
 (defn create-shader [gl type src]
   (let [shader (.createShader gl type)]
