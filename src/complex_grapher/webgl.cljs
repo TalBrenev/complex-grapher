@@ -1,7 +1,7 @@
 (ns complex-grapher.webgl
     (:require [complex-grapher.canvas :refer [fix-size width height]]))
 
-(defn create-webgl-context [canvas-id]
+(defn create-context [canvas-id]
   (fix-size canvas-id)
   (let [gl (-> (.getElementById js/document canvas-id)
                (.getContext "webgl"))]
@@ -68,8 +68,9 @@
     (.bufferData gl (.-ARRAY_BUFFER gl) (js/Float32Array. #js [-1 1 1 1 -1 -1 1 -1]) (.-STATIC_DRAW gl))
     buffer))
 
-(defn draw [gl]
-  (let [program (create-shader-program gl vs-src fs-src)
+(defn draw [canvas-id]
+  (let [gl (create-context canvas-id)
+        program (create-shader-program gl vs-src fs-src)
         buffer (create-buffer gl)]
     (.clear gl (.-COLOR_BUFFER_BIT gl))
     (.bindBuffer gl (.-ARRAY_BUFFER gl) buffer)

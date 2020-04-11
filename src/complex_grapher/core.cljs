@@ -1,7 +1,7 @@
 (ns complex-grapher.core
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add arg mag]]
               [complex-grapher.canvas :refer [width height]]
-              [complex-grapher.webgl :refer [draw create-webgl-context]]))
+              [complex-grapher.webgl :refer [draw]]))
 
 (enable-console-print!)
 
@@ -30,7 +30,7 @@
       (.-value)))
 
 (defn draw-graph []
-  (draw (create-webgl-context canvas-id)))
+  (draw canvas-id))
 
 (defn setup []
   (-> js/document
