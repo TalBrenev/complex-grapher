@@ -1,5 +1,5 @@
 (ns complex-grapher.core
-    (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add arg mag]]
+    (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add re im]]
               [complex-grapher.canvas :refer [width height]]
               [complex-grapher.webgl :refer [draw]]))
 
@@ -30,8 +30,15 @@
       (.-value)))
 
 (defn draw-graph []
-  (let [{:keys [centre zoom]} @graph-state]
-    (draw canvas-id (get-modulus))))
+  (let [{:keys [centre zoom]} @graph-state
+        top-left (top-left-corner centre zoom)
+        bottom-right (bottom-right-corner centre zoom)]
+    (draw canvas-id
+          (re top-left)
+          (im top-left)
+          (re bottom-right)
+          (im bottom-right)
+          (get-modulus))))
 
 (defn setup []
   (-> js/document
