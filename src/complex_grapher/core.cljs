@@ -1,5 +1,5 @@
 (ns complex-grapher.core
-    (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add re im]]
+    (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.canvas :refer [fix-size width height]]
               [complex-grapher.webgl :refer [draw]]
@@ -52,6 +52,16 @@
 
   (add-event-listener "function" "input" #(swap! graph-state assoc :function (get-value "function")))
   (add-event-listener "modulus" "input" #(swap! graph-state assoc :modulus (get-value "modulus")))
+  (add-event-listener "zoomin" "click" #(swap! graph-state update :zoom / 2))
+  (add-event-listener "zoomout" "click" #(swap! graph-state update :zoom * 2))
+  (add-event-listener "shiftup" "click" #(swap! graph-state (fn [state]
+                                                              (update state :centre sub (mul (* 0.3 (width canvas-id) (:zoom state)) i)))))
+  (add-event-listener "shiftdown" "click" #(swap! graph-state (fn [state]
+                                                                (update state :centre add (mul (* 0.3 (width canvas-id) (:zoom state)) i)))))
+  (add-event-listener "shiftleft" "click" #(swap! graph-state (fn [state]
+                                                                (update state :centre sub (* 0.3 (width canvas-id) (:zoom state))))))
+  (add-event-listener "shiftright" "click" #(swap! graph-state (fn [state]
+                                                                 (update state :centre add (* 0.3 (width canvas-id) (:zoom state))))))
 
   (add-watch graph-state :drawer
     (fn [_ _ _ new-state]
