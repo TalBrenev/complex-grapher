@@ -23,3 +23,11 @@
 (defn add-event-listener [element-id event handler]
   "Adds an event listener to an element in the DOM."
   (.addEventListener (get-element element-id) event handler))
+
+(defn width [id]
+  "Gets the width of an element."
+  (.-scrollWidth (get-element id)))
+
+(defn height [id]
+  "Gets the height of an element."
+  (.-scrollHeight (get-element id)))
