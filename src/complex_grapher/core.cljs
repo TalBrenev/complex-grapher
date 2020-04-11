@@ -19,6 +19,8 @@
 (defonce shift-right-id "shiftright")
 (defonce shift-left-id "shiftleft")
 (defonce location-id "graphlbl")
+(defonce controls-id "controls")
+(defonce controls-btn-id "ctr-show")
 
 (defonce graph-state (atom {:centre   (complex-from-cartesian 0 0)
                             :zoom     0.01
@@ -92,6 +94,14 @@
                                                    (complex-from-cartesian
                                                      (+ (re top-left) (* (/ x (width canvas-id)) (re (sub bottom-right top-left))))
                                                      (+ (im top-left) (* (/ y (height canvas-id)) (im (sub bottom-right top-left)))))))))
+
+  (add-event-listener controls-btn-id "click" #(if (= (.-innerText (get-element controls-btn-id)) "Show Controls")
+                                                 (do
+                                                   (set! (.-innerText (get-element controls-btn-id)) "Hide Controls")
+                                                   (set! (.-style (get-element controls-id)) "bottom: 0px"))
+                                                 (do
+                                                   (set! (.-innerText (get-element controls-btn-id)) "Show Controls")
+                                                   (set! (.-style (get-element controls-id)) ""))))
 
   (add-watch graph-state :drawer
     (fn [_ _ _ new-state]
