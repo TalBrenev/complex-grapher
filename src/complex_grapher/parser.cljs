@@ -72,11 +72,11 @@
   (let [operator (first operator-stack)]
     [(case (:type operator)
       :function (if (first ast-stack)
-                  (cons (list (:value operator) (first ast-stack))
+                  (cons (list operator (first ast-stack))
                         (rest ast-stack))
                   (throw "Invalid Expression"))
       :operator (if (second ast-stack)
-                  (cons (list (:value operator) (second ast-stack) (first ast-stack))
+                  (cons (list operator (second ast-stack) (first ast-stack))
                         (nthrest ast-stack 2))
                   (throw "Invalid Expression")))
      (rest operator-stack)]))
@@ -108,7 +108,7 @@
   (->> (tokenize expression)
        (reduce (fn [[ast-stack operator-stack] token]
                  (case (:type token)
-                   :number        [(cons (:value token) ast-stack) operator-stack]
+                   :number        [(cons token ast-stack) operator-stack]
                    :function      [ast-stack (cons token operator-stack)]
                    :left-bracket  [ast-stack (cons token operator-stack)]
                    :right-bracket (apply-right-bracket [ast-stack operator-stack])
@@ -117,18 +117,10 @@
        (apply-remaining-operators)
        (first)))
 
-(defn prune [ast]
-  (if-not (seq? ast)
-    ast
-    (let [children (map prune (rest ast))]
-      (if (every? #(satisfies? ComplexArithmetic %) children)
-        (apply (first ast) children)
-        (cons (first ast) children)))))
-
 (defn evaluate
   ([ast]
    (evaluate ast {}))
   ([ast variables]
-   (if (seq? ast)
-     (apply (first ast) (map #(evaluate % variables) (rest ast)))
-     (or (get variables ast) ast))))
+   (if (map? ast)
+     (or (get variables (:value ast)) (:value ast))
+     (apply (:value (first ast)) (map #(evaluate % variables) (rest ast))))))
