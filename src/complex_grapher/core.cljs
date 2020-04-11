@@ -1,5 +1,6 @@
 (ns complex-grapher.core
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add re im]]
+              [complex-grapher.parser :refer [parse]]
               [complex-grapher.canvas :refer [fix-size width height]]
               [complex-grapher.webgl :refer [draw]]))
 
@@ -34,11 +35,12 @@
         top-left (top-left-corner centre zoom)
         bottom-right (bottom-right-corner centre zoom)]
     (draw canvas-id
+          (parse (get-function))
+          (get-modulus)
           (re top-left)
           (im top-left)
           (re bottom-right)
-          (im bottom-right)
-          (get-modulus))))
+          (im bottom-right))))
 
 (defn setup []
   (fix-size canvas-id)

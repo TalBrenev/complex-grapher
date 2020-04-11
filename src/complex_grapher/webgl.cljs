@@ -1,4 +1,6 @@
-(ns complex-grapher.webgl)
+(ns complex-grapher.webgl
+  (:require [clojure.string :as s]
+            [complex-grapher.complex-arithmetic :refer [re im]]))
 
 (def vs-src
   "attribute vec4 aVertexPosition;
@@ -6,7 +8,25 @@
    varying highp float y;
    void main() {  gl_Position = aVertexPosition; x = aVertexPosition[0]; y = aVertexPosition[1]; }")
 
-(defn fs-src [top-left-x top-left-y bottom-right-x bottom-right-y modulus]
+(defn ast->glsl [ast]
+  (if (map? ast)
+    (case (:token ast)
+      "z"  "z"
+      "e"  "exp(1.0)"
+      "pi" "radians(180.0)"
+      "i"  "vec2(0.0,1.0)"
+      (str "vec2(float(" (re (:value ast)) "), float(" (im (:value ast)) "))"))
+    (let [funcName (str "comp" (s/capitalize
+                                 (case (:token (first ast))
+                                   "+" "add"
+                                   "*" "mul"
+                                   "/" "div"
+                                   "^" "pow"
+                                   "-" (if (= (:type (first ast)) :function) "negate" "sub")
+                                   (:token (first ast)))))]
+      (str funcName "(" (s/join "," (map ast->glsl (rest ast))) ")"))))
+
+(defn fs-src [ast modulus top-left-x top-left-y bottom-right-x bottom-right-y]
   (str "
    varying highp float x;
    varying highp float y;
@@ -130,13 +150,17 @@
      }
    }
 
+   highp vec2 compLn(highp vec2 z) {
+     return compLog(z);
+   }
+
    void main()
    {
      highp vec2 z = vec2(
        float("(/ (- bottom-right-x top-left-x) 2)") * x + float("(/ (+ top-left-x bottom-right-x) 2)"),
        float("(/ (- bottom-right-y top-left-y) 2)") * y + float("(/ (+ top-left-y bottom-right-y) 2)"));
 
-     highp vec2 f = compLog(z);
+     highp vec2 f = "(ast->glsl ast)";
 
      highp float modulus = float(" modulus ");
      highp float h = -floor(degrees(arg(f))) + 180.0;
@@ -175,9 +199,9 @@
     (.bufferData gl (.-ARRAY_BUFFER gl) (js/Float32Array. #js [-1 1 1 1 -1 -1 1 -1]) (.-STATIC_DRAW gl))
     buffer))
 
-(defn draw [canvas-id top-left-x top-left-y bottom-right-x bottom-right-y modulus]
+(defn draw [canvas-id ast modulus top-left-x top-left-y bottom-right-x bottom-right-y]
   (let [gl (create-context canvas-id)
-        program (create-shader-program gl vs-src (fs-src top-left-x top-left-y bottom-right-x bottom-right-y modulus))
+        program (create-shader-program gl vs-src (fs-src ast modulus top-left-x top-left-y bottom-right-x bottom-right-y))
         buffer (create-buffer gl)]
     (.clear gl (.-COLOR_BUFFER_BIT gl))
     (.bindBuffer gl (.-ARRAY_BUFFER gl) buffer)
