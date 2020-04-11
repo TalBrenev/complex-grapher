@@ -18,6 +18,7 @@
 (defonce shift-down-id "shiftdown")
 (defonce shift-right-id "shiftright")
 (defonce shift-left-id "shiftleft")
+(defonce location-id "graphlbl")
 
 (defonce graph-state (atom {:centre   (complex-from-cartesian 0 0)
                             :zoom     0.01
@@ -77,6 +78,20 @@
                                                                   (update state :centre sub (* 0.3 (width canvas-id) (:zoom state))))))
   (add-event-listener shift-right-id "click" #(swap! graph-state (fn [state]
                                                                    (update state :centre add (* 0.3 (width canvas-id) (:zoom state))))))
+
+  (add-event-listener canvas-id "mouseover" #(set! (.-style (get-element location-id)) "visibility: visible"))
+  (add-event-listener canvas-id "mouseout" #(set! (.-style (get-element location-id)) "visibility: hidden"))
+  (add-event-listener canvas-id "mousemove" #(let [x (.-layerX %)
+                                                   y (.-layerY %)
+                                                   {:keys [centre zoom]} @graph-state
+                                                   top-left (top-left-corner centre zoom)
+                                                   bottom-right (bottom-right-corner centre zoom)]
+                                               (set!
+                                                 (.-innerText (get-element location-id))
+                                                 (complex->str
+                                                   (complex-from-cartesian
+                                                     (+ (re top-left) (* (/ x (width canvas-id)) (re (sub bottom-right top-left))))
+                                                     (+ (im top-left) (* (/ y (height canvas-id)) (im (sub bottom-right top-left)))))))))
 
   (add-watch graph-state :drawer
     (fn [_ _ _ new-state]
