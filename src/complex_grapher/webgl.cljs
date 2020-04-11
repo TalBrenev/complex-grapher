@@ -12,8 +12,8 @@
   (if (map? ast)
     (case (:token ast)
       "z"  "z"
-      "e"  "exp(1.0)"
-      "pi" "radians(180.0)"
+      "e"  "vec2(exp(1.0),0.0)"
+      "pi" "vec2(radians(180.0),0.0)"
       "i"  "vec2(0.0,1.0)"
       (str "vec2(float(" (re (:value ast)) "), float(" (im (:value ast)) "))"))
     (let [funcName (str "comp" (s/capitalize
