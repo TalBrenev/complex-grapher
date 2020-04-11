@@ -31,3 +31,9 @@
 (defn height [id]
   "Gets the height of an element."
   (.-scrollHeight (get-element id)))
+
+(defn fix-size [canvas-id]
+  "Sets the width/height properties of the canvas to the actual width/height."
+  (let [canvas (.getElementById js/document canvas-id)]
+    (set! (.-width canvas)  (.-scrollWidth canvas))
+    (set! (.-height canvas) (.-scrollHeight canvas))))

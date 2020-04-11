@@ -2,7 +2,7 @@
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.webgl :refer [draw]]
-              [complex-grapher.utils :refer [get-element get-value set-value add-event-listener width height]]))
+              [complex-grapher.utils :refer [get-element get-value set-value add-event-listener width height fix-size]]))
 
 (enable-console-print!)
 
@@ -47,6 +47,8 @@
        (show-error-overlay)))))
 
 (defn setup []
+  (fix-size canvas-id)
+
   (set-value "function" (:function @graph-state))
   (set-value "modulus" (:modulus @graph-state))
 
@@ -67,7 +69,7 @@
     (fn [_ _ _ new-state]
       (draw-graph new-state)))
 
-  (.addEventListener js/window "resize" #(draw-graph))
+  (.addEventListener js/window "resize" #(do (fix-size canvas-id) (draw-graph)))
 
   (draw-graph))
 
