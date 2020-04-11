@@ -1,6 +1,6 @@
 (ns complex-grapher.core
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian add re im]]
-              [complex-grapher.canvas :refer [width height]]
+              [complex-grapher.canvas :refer [fix-size width height]]
               [complex-grapher.webgl :refer [draw]]))
 
 (enable-console-print!)
@@ -41,6 +41,7 @@
           (get-modulus))))
 
 (defn setup []
+  (fix-size canvas-id)
   (-> js/document
       (.getElementById "graphbutton")
       (.-firstChild)

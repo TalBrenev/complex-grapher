@@ -1,8 +1,6 @@
-(ns complex-grapher.webgl
-    (:require [complex-grapher.canvas :refer [fix-size width height]]))
+(ns complex-grapher.webgl)
 
 (defn create-context [canvas-id]
-  (fix-size canvas-id)
   (let [gl (-> (.getElementById js/document canvas-id)
                (.getContext "webgl"))]
     (.clearColor gl 0 0 0 1)
