@@ -2,7 +2,8 @@
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian complex->str add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.webgl :refer [draw detect-webgl]]
-              [complex-grapher.utils :refer [add-event-listener get-attr set-attr width height]]))
+              [complex-grapher.utils :refer [add-event-listener get-attr set-attr width height]]
+              [cljsjs.smooth-scroll]))
 
 (enable-console-print!)
 
@@ -104,6 +105,9 @@
 (defn show-no-webgl []
   (set-attr no-webgl-id "style" "visibility: visible"))
 
+(defn setup-smooth-scroll []
+  (.init js/smoothScroll #js {:speed 850}))
+
 (defn setup-default-values []
   (set-attr function-id "value" (:function @graph-state))
   (set-attr modulus-id "value" (:modulus @graph-state)))
@@ -132,6 +136,7 @@
 (defn setup []
   (if (detect-webgl canvas-id)
     (do
+      (setup-smooth-scroll)
       (setup-default-values)
       (setup-ui-events)
       (setup-graph))

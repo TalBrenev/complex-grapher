@@ -7,7 +7,8 @@
   :min-lein-version "2.8.3"
 
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.339"]]
+                 [org.clojure/clojurescript "1.10.339"]
+                 [cljsjs/smooth-scroll "10.2.1-0"]]
 
   :source-paths ["src"]
 
