@@ -2,7 +2,7 @@
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian complex->str add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.webgl :refer [draw detect-webgl]]
-              [complex-grapher.utils :refer [get-element add-event-listener width height]]))
+              [complex-grapher.utils :refer [add-event-listener get-attr set-attr width height]]))
 
 (enable-console-print!)
 
@@ -43,12 +43,6 @@
   (add centre (complex-from-cartesian (* 0.5 zoom (width canvas-id))
                                       (- (* 0.5 zoom (height canvas-id))))))
 
-(defn show-error-overlay []
-  (set! (.-style (get-element overlay-id)) "opacity: 1"))
-
-(defn hide-error-overlay []
-  (set! (.-style (get-element overlay-id)) "opacity: 0"))
-
 (defn draw-graph
   ([]
    (draw-graph @graph-state))
@@ -57,8 +51,8 @@
      (let [{:keys [centre zoom function modulus]} state
            top-left (top-left-corner centre zoom)
            bottom-right (bottom-right-corner centre zoom)]
-       (set! (.-innerText (get-element top-left-id)) (complex->str top-left))
-       (set! (.-innerText (get-element bottom-right-id)) (complex->str bottom-right))
+       (set-attr top-left-id "innerText" (complex->str top-left))
+       (set-attr bottom-right-id "innerText" (complex->str bottom-right))
        (draw canvas-id
              (parse function)
              modulus
@@ -66,9 +60,9 @@
              (re bottom-right)
              (im top-left)
              (im bottom-right))
-       (hide-error-overlay))
+       (set-attr overlay-id "style" "opacity: 0"))
      (catch :default e
-       (show-error-overlay)))))
+       (set-attr overlay-id "style" "opacity: 1")))))
 
 (defn zoom-in []
   (swap! graph-state update :zoom / 2))
@@ -99,33 +93,33 @@
         (+ (im top-left) (* (/ y (height canvas-id)) (im graph-range)))))))
 
 (defn toggle-controls []
-  (if (= (.-innerText (get-element controls-btn-id)) "Show Controls")
+  (if (= (get-attr controls-btn-id "innerText") "Show Controls")
     (do
-      (set! (.-innerText (get-element controls-btn-id)) "Hide Controls")
-      (set! (.-style (get-element controls-id)) "bottom: 0px"))
+      (set-attr controls-btn-id "innerText" "Hide Controls")
+      (set-attr controls-id "style" "bottom: 0px"))
     (do
-      (set! (.-innerText (get-element controls-btn-id)) "Show Controls")
-      (set! (.-style (get-element controls-id)) ""))))
+      (set-attr controls-btn-id "innerText" "Show Controls")
+      (set-attr controls-id "style" ""))))
 
 (defn show-no-webgl []
-  (set! (.-style (get-element no-webgl-id)) "visibility: visible"))
+  (set-attr no-webgl-id "style" "visibility: visible"))
 
 (defn setup-default-values []
-  (set! (.-value (get-element function-id)) (:function @graph-state))
-  (set! (.-value (get-element modulus-id)) (:modulus @graph-state)))
+  (set-attr function-id "value" (:function @graph-state))
+  (set-attr modulus-id "value" (:modulus @graph-state)))
 
 (defn setup-ui-events []
-  (add-event-listener function-id "input" #(swap! graph-state assoc :function (.-value (get-element function-id))))
-  (add-event-listener modulus-id "input" #(swap! graph-state assoc :modulus (.-value (get-element modulus-id))))
+  (add-event-listener function-id "input" #(swap! graph-state assoc :function (get-attr function-id "value")))
+  (add-event-listener modulus-id "input" #(swap! graph-state assoc :modulus (get-attr modulus-id "value")))
   (add-event-listener zoom-in-id "click" zoom-in)
   (add-event-listener zoom-out-id "click" zoom-out)
   (add-event-listener shift-up-id "click" shift-up)
   (add-event-listener shift-down-id "click" shift-down)
   (add-event-listener shift-left-id "click" shift-left)
   (add-event-listener shift-right-id "click" shift-right)
-  (add-event-listener canvas-id "mouseover" #(set! (.-style (get-element location-id)) "visibility: visible"))
-  (add-event-listener canvas-id "mouseout" #(set! (.-style (get-element location-id)) "visibility: hidden"))
-  (add-event-listener canvas-id "mousemove" #(set! (.-innerText (get-element location-id)) (graph-location (.-layerX %) (.-layerY %))))
+  (add-event-listener canvas-id "mouseover" #(set-attr location-id "style" "visibility: visible"))
+  (add-event-listener canvas-id "mouseout" #(set-attr location-id "style" "visibility: hidden"))
+  (add-event-listener canvas-id "mousemove" #(set-attr location-id "innerText" (graph-location (.-layerX %) (.-layerY %))))
   (add-event-listener controls-btn-id "click" toggle-controls))
 
 (defn setup-graph []

@@ -1,7 +1,7 @@
 (ns complex-grapher.webgl
   (:require [clojure.string :as s]
             [complex-grapher.complex-arithmetic :refer [re im]]
-            [complex-grapher.utils :refer [get-element width height]]))
+            [complex-grapher.utils :refer [set-attr width height]]))
 
 (defn detect-webgl [canvas-id]
   (let [gl (.getContext (.getElementById js/document canvas-id) "webgl")]
@@ -206,9 +206,8 @@
     buffer))
 
 (defn draw [canvas-id ast modulus left-x right-x top-y bottom-y]
-  (let [canvas (get-element canvas-id)]
-    (set! (.-width canvas)  (.-scrollWidth canvas))
-    (set! (.-height canvas) (.-scrollHeight canvas)))
+  (set-attr canvas-id "width" (width canvas-id))
+  (set-attr canvas-id "height" (height canvas-id))
   (let [gl (create-context canvas-id)
         program (create-shader-program gl vs-src (fs-src ast modulus left-x right-x top-y bottom-y))
         buffer (create-buffer gl)]

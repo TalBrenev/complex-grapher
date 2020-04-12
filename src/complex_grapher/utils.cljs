@@ -16,10 +16,18 @@
   "Adds an event listener to an element in the DOM."
   (.addEventListener (get-element element-id) event handler))
 
+(defn get-attr [id attr]
+  "Gets an attribute of the element with the given id."
+  (aget (get-element id) attr))
+
+(defn set-attr [id attr value]
+  "Sets an attribute of the element with the given id."
+  (aset (get-element id) attr value))
+
 (defn width [id]
   "Gets the width of an element."
-  (.-scrollWidth (get-element id)))
+  (get-attr id "scrollWidth"))
 
 (defn height [id]
   "Gets the height of an element."
-  (.-scrollHeight (get-element id)))
+  (get-attr id "scrollHeight"))
