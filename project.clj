@@ -14,8 +14,7 @@
 
   :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
             "fig:build" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
-            "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
-            "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" complex-grapher.test-runner]}
+            "fig:min"   ["run" "-m" "figwheel.main" "-bo" "min"]}
 
   :plugins [[cider/cider-nrepl "0.21.1"]]
 
@@ -24,4 +23,5 @@
                                   [cider/piggieback "0.4.0"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
                    :clean-targets ^{:protect false} ["resources/public/cljs-out"
+                                                     "resources/public/js"
                                                      :target-path]}})
