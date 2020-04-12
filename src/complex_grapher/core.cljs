@@ -1,7 +1,7 @@
 (ns complex-grapher.core
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian complex->str add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
-              [complex-grapher.webgl :refer [draw]]
+              [complex-grapher.webgl :refer [draw detect-webgl]]
               [complex-grapher.utils :refer [get-element get-value set-value add-event-listener width height fix-size]]))
 
 (enable-console-print!)
@@ -21,6 +21,7 @@
 (defonce location-id "graphlbl")
 (defonce controls-id "controls")
 (defonce controls-btn-id "ctr-show")
+(defonce no-webgl-id "no-webgl-wrapper")
 
 (defonce graph-state (atom {:centre   (complex-from-cartesian 0 0)
                             :zoom     0.01
@@ -63,52 +64,55 @@
        (show-error-overlay)))))
 
 (defn setup []
-  (fix-size canvas-id)
+  (if (detect-webgl canvas-id)
+    (do
+      (fix-size canvas-id)
 
-  (set-value function-id (:function @graph-state))
-  (set-value modulus-id (:modulus @graph-state))
+      (set-value function-id (:function @graph-state))
+      (set-value modulus-id (:modulus @graph-state))
 
-  (add-event-listener function-id "input" #(swap! graph-state assoc :function (get-value function-id)))
-  (add-event-listener modulus-id "input" #(swap! graph-state assoc :modulus (get-value modulus-id)))
-  (add-event-listener zoom-in-id "click" #(swap! graph-state update :zoom / 2))
-  (add-event-listener zoom-out-id "click" #(swap! graph-state update :zoom * 2))
-  (add-event-listener shift-up-id "click" #(swap! graph-state (fn [state]
-                                                               (update state :centre sub (mul (* 0.3 (height canvas-id) (:zoom state)) i)))))
-  (add-event-listener shift-down-id "click" #(swap! graph-state (fn [state]
-                                                                  (update state :centre add (mul (* 0.3 (height canvas-id) (:zoom state)) i)))))
-  (add-event-listener shift-left-id "click" #(swap! graph-state (fn [state]
-                                                                  (update state :centre sub (* 0.3 (width canvas-id) (:zoom state))))))
-  (add-event-listener shift-right-id "click" #(swap! graph-state (fn [state]
-                                                                   (update state :centre add (* 0.3 (width canvas-id) (:zoom state))))))
+      (add-event-listener function-id "input" #(swap! graph-state assoc :function (get-value function-id)))
+      (add-event-listener modulus-id "input" #(swap! graph-state assoc :modulus (get-value modulus-id)))
+      (add-event-listener zoom-in-id "click" #(swap! graph-state update :zoom / 2))
+      (add-event-listener zoom-out-id "click" #(swap! graph-state update :zoom * 2))
+      (add-event-listener shift-up-id "click" #(swap! graph-state (fn [state]
+                                                                   (update state :centre sub (mul (* 0.3 (height canvas-id) (:zoom state)) i)))))
+      (add-event-listener shift-down-id "click" #(swap! graph-state (fn [state]
+                                                                      (update state :centre add (mul (* 0.3 (height canvas-id) (:zoom state)) i)))))
+      (add-event-listener shift-left-id "click" #(swap! graph-state (fn [state]
+                                                                      (update state :centre sub (* 0.3 (width canvas-id) (:zoom state))))))
+      (add-event-listener shift-right-id "click" #(swap! graph-state (fn [state]
+                                                                       (update state :centre add (* 0.3 (width canvas-id) (:zoom state))))))
 
-  (add-event-listener canvas-id "mouseover" #(set! (.-style (get-element location-id)) "visibility: visible"))
-  (add-event-listener canvas-id "mouseout" #(set! (.-style (get-element location-id)) "visibility: hidden"))
-  (add-event-listener canvas-id "mousemove" #(let [x (.-layerX %)
-                                                   y (.-layerY %)
-                                                   {:keys [centre zoom]} @graph-state
-                                                   top-left (top-left-corner centre zoom)
-                                                   bottom-right (bottom-right-corner centre zoom)]
-                                               (set!
-                                                 (.-innerText (get-element location-id))
-                                                 (complex->str
-                                                   (complex-from-cartesian
-                                                     (+ (re top-left) (* (/ x (width canvas-id)) (re (sub bottom-right top-left))))
-                                                     (+ (im top-left) (* (/ y (height canvas-id)) (im (sub bottom-right top-left)))))))))
+      (add-event-listener canvas-id "mouseover" #(set! (.-style (get-element location-id)) "visibility: visible"))
+      (add-event-listener canvas-id "mouseout" #(set! (.-style (get-element location-id)) "visibility: hidden"))
+      (add-event-listener canvas-id "mousemove" #(let [x (.-layerX %)
+                                                       y (.-layerY %)
+                                                       {:keys [centre zoom]} @graph-state
+                                                       top-left (top-left-corner centre zoom)
+                                                       bottom-right (bottom-right-corner centre zoom)]
+                                                   (set!
+                                                     (.-innerText (get-element location-id))
+                                                     (complex->str
+                                                       (complex-from-cartesian
+                                                         (+ (re top-left) (* (/ x (width canvas-id)) (re (sub bottom-right top-left))))
+                                                         (+ (im top-left) (* (/ y (height canvas-id)) (im (sub bottom-right top-left)))))))))
 
-  (add-event-listener controls-btn-id "click" #(if (= (.-innerText (get-element controls-btn-id)) "Show Controls")
-                                                 (do
-                                                   (set! (.-innerText (get-element controls-btn-id)) "Hide Controls")
-                                                   (set! (.-style (get-element controls-id)) "bottom: 0px"))
-                                                 (do
-                                                   (set! (.-innerText (get-element controls-btn-id)) "Show Controls")
-                                                   (set! (.-style (get-element controls-id)) ""))))
+      (add-event-listener controls-btn-id "click" #(if (= (.-innerText (get-element controls-btn-id)) "Show Controls")
+                                                     (do
+                                                       (set! (.-innerText (get-element controls-btn-id)) "Hide Controls")
+                                                       (set! (.-style (get-element controls-id)) "bottom: 0px"))
+                                                     (do
+                                                       (set! (.-innerText (get-element controls-btn-id)) "Show Controls")
+                                                       (set! (.-style (get-element controls-id)) ""))))
 
-  (add-watch graph-state :drawer
-    (fn [_ _ _ new-state]
-      (draw-graph new-state)))
+      (add-watch graph-state :drawer
+        (fn [_ _ _ new-state]
+          (draw-graph new-state)))
 
-  (.addEventListener js/window "resize" #(do (fix-size canvas-id) (draw-graph)))
+      (.addEventListener js/window "resize" #(do (fix-size canvas-id) (draw-graph)))
 
-  (draw-graph))
+      (draw-graph))
+    (set! (.-style (get-element no-webgl-id)) "visibility: visible")))
 
 (.addEventListener js/window "load" setup)

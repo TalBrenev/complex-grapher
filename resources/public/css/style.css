@@ -271,6 +271,31 @@ a:hover
     text-shadow: 1px 1px 1px black;
 }
 
+.no-webgl-wrapper
+{
+    visibility: hidden;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.no-webgl
+{
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-image: url("../euler.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
 
 
 /*Responsive CSS*/

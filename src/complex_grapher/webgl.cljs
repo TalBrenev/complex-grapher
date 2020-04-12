@@ -1,6 +1,11 @@
 (ns complex-grapher.webgl
   (:require [clojure.string :as s]
-            [complex-grapher.complex-arithmetic :refer [re im]]))
+            [complex-grapher.complex-arithmetic :refer [re im]]
+            [complex-grapher.utils :refer [width height]]))
+
+(defn detect-webgl [canvas-id]
+  (let [gl (.getContext (.getElementById js/document canvas-id) "webgl")]
+    (and gl (instance? js/WebGLRenderingContext gl))))
 
 (def vs-src
   "attribute vec4 aVertexPosition;
@@ -204,6 +209,7 @@
   (let [gl (create-context canvas-id)
         program (create-shader-program gl vs-src (fs-src ast modulus left-x right-x top-y bottom-y))
         buffer (create-buffer gl)]
+    (.viewport gl 0 0 (width canvas-id) (height canvas-id))
     (.clear gl (.-COLOR_BUFFER_BIT gl))
     (.bindBuffer gl (.-ARRAY_BUFFER gl) buffer)
     (.vertexAttribPointer gl
