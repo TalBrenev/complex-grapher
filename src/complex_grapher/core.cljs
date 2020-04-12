@@ -2,7 +2,7 @@
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian complex->str add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.webgl :refer [draw detect-webgl]]
-              [complex-grapher.utils :refer [get-element get-value set-value add-event-listener width height fix-size]]))
+              [complex-grapher.utils :refer [get-element add-event-listener width height fix-size]]))
 
 (enable-console-print!)
 
@@ -111,12 +111,12 @@
   (set! (.-style (get-element no-webgl-id)) "visibility: visible"))
 
 (defn setup-default-values []
-  (set-value function-id (:function @graph-state))
-  (set-value modulus-id (:modulus @graph-state)))
+  (set! (.-value (get-element function-id)) (:function @graph-state))
+  (set! (.-value (get-element modulus-id)) (:modulus @graph-state)))
 
 (defn setup-ui-events []
-  (add-event-listener function-id "input" #(swap! graph-state assoc :function (get-value function-id)))
-  (add-event-listener modulus-id "input" #(swap! graph-state assoc :modulus (get-value modulus-id)))
+  (add-event-listener function-id "input" #(swap! graph-state assoc :function (.-value (get-element function-id))))
+  (add-event-listener modulus-id "input" #(swap! graph-state assoc :modulus (.-value (get-element modulus-id))))
   (add-event-listener zoom-in-id "click" zoom-in)
   (add-event-listener zoom-out-id "click" zoom-out)
   (add-event-listener shift-up-id "click" shift-up)
