@@ -1,8 +1,8 @@
 (defproject complex-grapher "1.0.0"
   :description "A tool for graphing complex-valued functions."
   :url "https://www.talbrenev.com/complexgrapher/"
-  ;; :license {:name "Eclipse Public License"
-  ;;           :url "http://www.eclipse.org/legal/epl-v10.html"
+  :license {:name "GNU General Public License"
+            :url "https://www.gnu.org/licenses/gpl-3.0.txt"}
 
   :min-lein-version "2.8.3"
 
