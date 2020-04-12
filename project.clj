@@ -1,6 +1,6 @@
 (defproject complex-grapher "1.0.0"
   :description "A tool for graphing complex-valued functions."
-  :url "https://www.complexgrapher.com/"
+  :url "https://www.talbrenev.com/complexgrapher/"
   ;; :license {:name "Eclipse Public License"
   ;;           :url "http://www.eclipse.org/legal/epl-v10.html"
 
