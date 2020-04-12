@@ -2,7 +2,7 @@
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian complex->str add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.webgl :refer [draw detect-webgl]]
-              [complex-grapher.utils :refer [get-element add-event-listener width height fix-size]]))
+              [complex-grapher.utils :refer [get-element add-event-listener width height]]))
 
 (enable-console-print!)
 
@@ -129,11 +129,10 @@
   (add-event-listener controls-btn-id "click" toggle-controls))
 
 (defn setup-graph []
-  (fix-size canvas-id)
   (add-watch graph-state :drawer
     (fn [_ _ _ new-state]
       (draw-graph new-state)))
-  (.addEventListener js/window "resize" #(do (fix-size canvas-id) (draw-graph)))
+  (.addEventListener js/window "resize" #(draw-graph))
   (draw-graph))
 
 (defn setup []
