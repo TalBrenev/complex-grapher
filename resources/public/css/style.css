@@ -229,6 +229,11 @@ a:hover
     text-decoration: underline;
 }
 
+.footnote a
+{
+    color: #97b6e8;
+}
+
 .mob
 {
     display: none;
