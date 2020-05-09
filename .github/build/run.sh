@@ -5,6 +5,6 @@ set -e
 
 lein deps
 lein fig:min
-mkdir -p build/complex-grapher
-cp -r resources/public/* build/complex-grapher
-rm -r build/complex-grapher/cljs-out
+mkdir -p build/complexgrapher
+cp -r resources/public/* build/complexgrapher
+rm -r build/complexgrapher/cljs-out
