@@ -6,4 +6,4 @@
 (defn main [app-state]
   [:div {:class "main"}
    [graph (r/cursor app-state [:webgl?]) (r/cursor app-state [:graph])]
-   [controls]])
+   [controls (r/cursor app-state [:graph])]])

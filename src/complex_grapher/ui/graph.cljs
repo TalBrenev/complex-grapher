@@ -23,6 +23,8 @@
         bottom-right (bottom-right-corner centre zoom)]
     (swap! graph-state assoc :top-left-corner top-left)
     (swap! graph-state assoc :bottom-right-corner bottom-right)
+    (swap! graph-state assoc :width (width canvas-id))
+    (swap! graph-state assoc :height (height canvas-id))
     (webgl/draw canvas-id
                 (parse function)
                 modulus
