@@ -7,6 +7,11 @@
               [complex-grapher.webgl :refer [draw detect-webgl]]
               [cljsjs.smooth-scroll]))
 
+(defonce app-state (r/atom {:centre   (complex-from-cartesian 0 0)
+                            :zoom     0.01
+                            :function "z"
+                            :modulus  0.5}))
+
 (defn main []
   [:div
    [:div {:id "no-webgl-wrapper" :class "no-webgl-wrapper"}
