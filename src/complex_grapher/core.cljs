@@ -3,14 +3,15 @@
               [reagent.dom :as d]
               [cljsjs.smooth-scroll]
               [complex-grapher.ui.main :refer [main]]
-              [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]
-              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian]]))
+              [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]))
 
 (defonce app-state (r/atom {:webgl? nil
-                            :graph  {:centre   (complex-from-cartesian 0 0)
-                                     :zoom     0.01
-                                     :function "z"
-                                     :modulus  0.5}}))
+                            :graph  {:centre              0
+                                     :zoom                0.01
+                                     :function            "z"
+                                     :modulus             0.5
+                                     :top-left-corner     0
+                                     :bottom-right-corner 0}}))
 
 (defn app []
   [:div

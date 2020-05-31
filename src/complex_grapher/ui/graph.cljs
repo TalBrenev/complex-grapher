@@ -21,7 +21,8 @@
   (let [{:keys [centre zoom function modulus]} @graph-state
         top-left (top-left-corner centre zoom)
         bottom-right (bottom-right-corner centre zoom)]
-    ;; TODO: top-left/bottom-right corner labels
+    (swap! graph-state assoc :top-left-corner top-left)
+    (swap! graph-state assoc :bottom-right-corner bottom-right)
     (webgl/draw canvas-id
                 (parse function)
                 modulus
