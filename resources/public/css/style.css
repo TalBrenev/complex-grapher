@@ -263,7 +263,7 @@ a:hover
     border-radius: 10px;
 }
 
-#graphlbl
+.graphlbl
 {
     position: absolute;
     right: 10px;
@@ -422,7 +422,7 @@ a:hover
         top: -50px;
         width: 48%;
     }
-    #ctr-show
+    .ctr-show
     {
         position: relative;
         height: 50px;
@@ -433,7 +433,7 @@ a:hover
         margin: auto;
         box-shadow: 0 -5px 15px #333;
     }
-    #ctr-show:active
+    .ctr-show:active
     {
         box-shadow: 0 -5px 15px #222;
         transform: none;
@@ -494,7 +494,7 @@ a:hover
         margin-top: 5px;
         top: -35px;
     }
-    #ctr-show
+    .ctr-show
     {
         height: 35px;
         top: -35px;
@@ -513,7 +513,7 @@ a:hover
         border-radius: 8px;
         font-size: 13px;
     }
-    #graphlbl
+    .graphlbl
     {
         bottom: auto;
         top: 10px;

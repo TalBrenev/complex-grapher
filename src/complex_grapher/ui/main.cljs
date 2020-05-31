@@ -2,40 +2,40 @@
     (:require [goog.string :refer [unescapeEntities]]))
 
 (defn main []
-  [:div {:id "main" :class "main"}
-   [:div {:class "overlay"} {:id "error"}
+  [:div {:class "main"}
+   [:div {:class "overlay"}
     [:p {:class "overlaytext"} "Invalid Function"]]
    [:div {:class "graph"}
     [:canvas {:id "canvas"}]
-    [:p {:id "graphlbl"}]]
-   [:div {:id "controls" :class "control"}
-    [:button {:id "ctr-show ":class "mob"} "Show Controls"]
+    [:p {:class "graphlbl"}]]
+   [:div {:class "control"}
+    [:button {:class "ctr-show mob"} "Show Controls"]
     [:div {:class "ctrrow"}
      [:p {:class "label"} "Function:"]
-     [:input {:type "search" :id "function"}]]
+     [:input {:type "search"}]]
     [:div {:class "ctrrow"}
      [:p {:class "label"} "Magnitude modulus:"]
-     [:input {:type "search" :id "modulus"}]]
+     [:input {:type "search"}]]
     [:div {:class "ctrrow"}
-     [:p {:class "label" :id "tlclabel"} "Top left corner:"]
-     [:p {:class "info" :id "topleft"}]]
+     [:p {:class "label"} "Top left corner:"]
+     [:p {:class "info"}]]
     [:div {:class "ctrrow"}
-     [:p {:class "label" :id "brclabel"} "Bottom right corner:"]
-     [:p {:class "info" :id "bottomright"}]]
+     [:p {:class "label"} "Bottom right corner:"]
+     [:p {:class "info"}]]
     [:div {:class "ctrrow ctrrow-b"}
      [:div {:class "arrows"}
-      [:div {:id "shiftup" :class "arrowvert"}
+      [:div {:class "arrowvert"}
        [:button (unescapeEntities "&#8593;")]]
-      [:div {:id "shiftleft" :class "arrowhori"}
+      [:div {:class "arrowhori"}
        [:button (unescapeEntities "&#8592;")]]
-      [:div {:id "shiftright" :class "arrowhori"}
+      [:div {:class "arrowhori"}
        [:button (unescapeEntities "&#8594;")]]
-      [:div {:id "shiftdown" :class "arrowvert"}
+      [:div {:class "arrowvert"}
        [:button (unescapeEntities "&#8595;")]]]
      [:div {:class "zooms"}
-      [:div {:id "zoomout" :class "zoom"}
+      [:div {:class "zoom"}
        [:button (unescapeEntities "&#8211;")]]
-      [:div {:id "zoomin" :class "zoom"}
+      [:div {:class "zoom"}
        [:button "+"]]]]
     [:div {:class "ctrrow ctrrow-b"}
      [:a {:data-scroll "" :href "#about"}
