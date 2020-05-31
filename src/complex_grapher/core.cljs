@@ -2,6 +2,9 @@
     (:require [reagent.core :as r]
               [reagent.dom :as d]
               [goog.string :refer [unescapeEntities]]
+              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian complex->str add sub mul re im i]]
+              [complex-grapher.parser :refer [parse]]
+              [complex-grapher.webgl :refer [draw detect-webgl]]
               [cljsjs.smooth-scroll]))
 
 (defn main []
