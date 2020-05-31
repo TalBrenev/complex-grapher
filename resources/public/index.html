@@ -32,54 +32,7 @@
         <meta name="viewport" content="width=device-width">
     </head>
     <body>
-        <div id="no-webgl-wrapper" class="no-webgl-wrapper">
-            <div class="no-webgl">
-            </div>
-        </div>
-        <div class="wrapper" id="wrapper">
-            <h1 class="title">The Complex Grapher</h1>
-            <div class="main" id="main">
-                <div class="overlay" id="error">
-                    <p class="overlaytext">Invalid Function</p>
-                </div>
-                <div class="graph">
-                    <canvas id="canvas"></canvas>
-                    <p id="graphlbl"></p>
-                </div>
-                <div id="controls" class="control">
-                    <button class="mob" id="ctr-show">Show Controls</button>
-                    <div class="ctrrow">
-                        <p class="label">Function:</p>
-                        <input type="search" id="function">
-                    </div>
-                    <div class="ctrrow">
-                        <p class="label">Magnitude modulus:</p>
-                        <input type="number" id="modulus">
-                    </div>
-                    <div class="ctrrow" id="tlclabel">
-                        <p class="label">Top left corner:</p>
-                        <p class="info" id="topleft"></p>
-                    </div>
-                    <div class="ctrrow" id="brclabel">
-                        <p class="label">Bottom right corner:</p>
-                        <p class="info" id="bottomright"></p>
-                    </div>
-                    <div class="ctrrow ctrrow-b">
-                        <div class="arrows">
-                            <div id="shiftup" class="arrowvert"><button>&#8593;</button></div>
-                            <div id="shiftleft" class="arrowhori" ><button>&#8592;</button></div>
-                            <div id="shiftright" class="arrowhori"><button>&#8594;</button></div>
-                            <div id="shiftdown" class="arrowvert"><button>&#8595;</button></div>
-                        </div>
-                        <div class="zooms">
-                            <div id="zoomout" class="zoom"><button>&#8211;</button></div>
-                            <div id="zoomin" class="zoom"><button>+</button></div>
-                        </div>
-                    </div>
-                    <div class="ctrrow ctrrow-b"><a data-scroll href="#about"><p class="learnmore">Click here to learn more</p></a></div>
-                </div>
-            </div>
-            <p class="footnote">Created by <a href="https://www.talbrenev.com/">Tal Brenev</a></p>
+        <div id="app">
         </div>
         <div class="about-wrapper" id="about">
             <div class="about">
