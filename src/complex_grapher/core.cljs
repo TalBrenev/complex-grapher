@@ -58,9 +58,12 @@
         [:p {:class "learnmore"} "Click here to learn more"]]]]]
     [:p {:class "footnote"} "Created by " [:a {:href "https://www.talbrenev.com/"} "Tal Brenev"]]]])
 
+(defn setup-smooth-scroll []
+  (.init js/smoothScroll #js {:speed 850}))
+
 (.addEventListener
   js/window
   "load"
   (fn []
-    (.init js/smoothScroll #js {:speed 850})
+    (setup-smooth-scroll)
     (d/render main (.getElementById js/document "app"))))
