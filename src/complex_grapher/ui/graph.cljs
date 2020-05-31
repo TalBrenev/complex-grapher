@@ -33,9 +33,10 @@
                 (im top-left)
                 (im bottom-right))))
 
-(defn graph [webgl? graph-state]
+(defn graph [webgl? last-resize graph-state]
   (let [show-overlay? (r/atom false)]
     (fn []
+      @last-resize ;; Dereference to force render on window size change
       (when @webgl?
         (try
           (draw-graph graph-state)

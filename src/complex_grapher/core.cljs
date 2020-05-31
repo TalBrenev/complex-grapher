@@ -5,15 +5,19 @@
               [complex-grapher.ui.main :refer [main]]
               [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]))
 
-(defonce app-state (r/atom {:webgl? nil
-                            :graph  {:centre              0
-                                     :zoom                0.01
-                                     :function            "z"
-                                     :modulus             0.5
-                                     :top-left-corner     0
-                                     :bottom-right-corner 0
-                                     :width               0
-                                     :height              0}}))
+(defn get-time []
+  (.getTime (js/Date.)))
+
+(defonce app-state (r/atom {:webgl?      nil
+                            :last-resize (get-time)
+                            :graph       {:centre              0
+                                          :zoom                0.01
+                                          :function            "z"
+                                          :modulus             0.5
+                                          :top-left-corner     0
+                                          :bottom-right-corner 0
+                                          :width               0
+                                          :height              0}}))
 
 (defn app []
   [:div
@@ -26,10 +30,16 @@
 (defn setup-smooth-scroll []
   (.init js/smoothScroll #js {:speed 850}))
 
+(defn setup-resize-listener []
+  (.addEventListener js/window
+                     "resize"
+                     #(swap! app-state assoc :last-resize (get-time))))
+
 (.addEventListener
   js/window
   "load"
   (fn []
     (setup-smooth-scroll)
+    (setup-resize-listener)
     (d/render app (.getElementById js/document "app"))
     (check-webgl (r/cursor app-state [:webgl?]))))

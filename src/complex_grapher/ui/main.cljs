@@ -5,5 +5,5 @@
 
 (defn main [app-state]
   [:div {:class "main"}
-   [graph (r/cursor app-state [:webgl?]) (r/cursor app-state [:graph])]
+   [graph (r/cursor app-state [:webgl?]) (r/cursor app-state [:last-resize]) (r/cursor app-state [:graph])]
    [controls (r/cursor app-state [:graph])]])
