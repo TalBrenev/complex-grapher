@@ -1,5 +1,6 @@
 (ns complex-grapher.ui.graph
-    (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian re im add]]
+    (:require [reagent.core :as r]
+              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian re im add]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.utils :refer [width height]]
               [complex-grapher.webgl :as webgl]))
@@ -17,24 +18,30 @@
                                       (- (* 0.5 zoom (height canvas-id))))))
 
 (defn draw-graph [graph-state]
-   (try
-     (let [{:keys [centre zoom function modulus]} @graph-state
-           top-left (top-left-corner centre zoom)
-           bottom-right (bottom-right-corner centre zoom)]
-       ;; TODO: top-left/bottom-right corner labels
-       (webgl/draw canvas-id
-                   (parse function)
-                   modulus
-                   (re top-left)
-                   (re bottom-right)
-                   (im top-left)
-                   (im bottom-right)))
-       ;; TODO: error overlay
-     (catch :default e)))
-       ;; TODO: error overlay
+  (let [{:keys [centre zoom function modulus]} @graph-state
+        top-left (top-left-corner centre zoom)
+        bottom-right (bottom-right-corner centre zoom)]
+    ;; TODO: top-left/bottom-right corner labels
+    (webgl/draw canvas-id
+                (parse function)
+                modulus
+                (re top-left)
+                (re bottom-right)
+                (im top-left)
+                (im bottom-right))))
 
 (defn graph [webgl? graph-state]
-  (when @webgl? (draw-graph graph-state))
-  [:div {:class "graph"}
-   [:canvas {:id canvas-id}]
-   [:p {:class "graphlbl"}]])
+  (let [show-overlay? (r/atom false)]
+    (fn []
+      (when @webgl?
+        (try
+          (draw-graph graph-state)
+          (reset! show-overlay? false)
+          (catch :default e
+            (reset! show-overlay? true))))
+      [:div
+       [:div {:class "overlay" :style (if @show-overlay? {:opacity 1} {:opacity 0})}
+        [:p {:class "overlaytext"} "Invalid Function"]]
+       [:div {:class "graph"}
+        [:canvas {:id canvas-id}]
+        [:p {:class "graphlbl"}]]])))

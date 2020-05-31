@@ -142,7 +142,6 @@ button:active
     bottom: 0;
     z-index: 5;
     background-color: rgba(0, 0, 0, 0.4);
-    opacity: 0;
     -webkit-transition: opacity 0.5s;
     transition: opacity 0.5s;
     pointer-events: none;
