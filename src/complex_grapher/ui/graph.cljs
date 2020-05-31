@@ -17,32 +17,31 @@
   (add centre (complex-from-cartesian (* 0.5 zoom (width canvas-id))
                                       (- (* 0.5 zoom (height canvas-id))))))
 
-(defn draw-graph [graph-state]
-  (let [{:keys [centre zoom function modulus]} @graph-state
-        top-left (top-left-corner centre zoom)
-        bottom-right (bottom-right-corner centre zoom)]
-    (swap! graph-state assoc :top-left-corner top-left)
-    (swap! graph-state assoc :bottom-right-corner bottom-right)
-    (swap! graph-state assoc :width (width canvas-id))
-    (swap! graph-state assoc :height (height canvas-id))
-    (webgl/draw canvas-id
-                (parse function)
-                modulus
-                (re top-left)
-                (re bottom-right)
-                (im top-left)
-                (im bottom-right))))
-
 (defn graph [webgl? last-resize graph-state]
   (let [show-overlay? (r/atom false)]
     (fn []
       @last-resize ;; Dereference to force render on window size change
+
       (when @webgl?
         (try
-          (draw-graph graph-state)
+          (let [{:keys [centre zoom function modulus]} @graph-state
+                  top-left (top-left-corner centre zoom)
+                  bottom-right (bottom-right-corner centre zoom)]
+              (swap! graph-state assoc :top-left-corner top-left)
+              (swap! graph-state assoc :bottom-right-corner bottom-right)
+              (swap! graph-state assoc :width (width canvas-id))
+              (swap! graph-state assoc :height (height canvas-id))
+              (webgl/draw canvas-id
+                          (parse function)
+                          modulus
+                          (re top-left)
+                          (re bottom-right)
+                          (im top-left)
+                          (im bottom-right)))
           (reset! show-overlay? false)
           (catch :default e
             (reset! show-overlay? true))))
+
       [:div
        [:div {:class "overlay" :style (if @show-overlay? {:opacity 1} {:opacity 0})}
         [:p {:class "overlaytext"} "Invalid Function"]]
