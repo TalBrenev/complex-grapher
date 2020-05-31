@@ -1,7 +1,7 @@
 (ns complex-grapher.ui.main
     (:require [goog.string :refer [unescapeEntities]]))
 
-(defn main []
+(defn main [app-state]
   [:div {:class "main"}
    [:div {:class "overlay"}
     [:p {:class "overlaytext"} "Invalid Function"]]
