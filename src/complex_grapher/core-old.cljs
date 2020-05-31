@@ -1,4 +1,4 @@
-(ns complex-grapher.core
+(ns complex-grapher.core-old
     (:require [complex-grapher.complex-arithmetic :refer [complex-from-cartesian complex->str add sub mul re im i]]
               [complex-grapher.parser :refer [parse]]
               [complex-grapher.webgl :refer [draw detect-webgl]]
