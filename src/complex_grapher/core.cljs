@@ -3,18 +3,19 @@
               [reagent.dom :as d]
               [cljsjs.smooth-scroll]
               [complex-grapher.ui.main :refer [main]]
+              [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]
               [complex-grapher.complex-arithmetic :refer [complex-from-cartesian]]))
 
-(defonce app-state (r/atom {:centre   (complex-from-cartesian 0 0)
-                            :zoom     0.01
-                            :function "z"
-                            :modulus  0.5}))
+(defonce app-state (r/atom {:webgl? nil
+                            :graph  {:centre   (complex-from-cartesian 0 0)
+                                     :zoom     0.01
+                                     :function "z"
+                                     :modulus  0.5}}))
 
 (defn app []
   [:div
-   [:div {:id "no-webgl-wrapper" :class "no-webgl-wrapper"}
-    [:div {:class "no-webgl"}]]
-   [:div {:id "wrapper" :class "wrapper"}
+   [no-webgl (r/cursor app-state [:webgl?])]
+   [:div {:class "wrapper"}
     [:h1 {:class "title"} "The Complex Grapher"]
     [main]
     [:p {:class "footnote"} "Created by " [:a {:href "https://www.talbrenev.com/"} "Tal Brenev"]]]])
@@ -27,4 +28,5 @@
   "load"
   (fn []
     (setup-smooth-scroll)
-    (d/render app (.getElementById js/document "app"))))
+    (d/render app (.getElementById js/document "app"))
+    (check-webgl (r/cursor app-state [:webgl?]))))
