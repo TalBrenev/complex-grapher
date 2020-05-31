@@ -530,7 +530,7 @@ a:hover
     top: 100%;
     left: 0;
     right: 0;
-    margin: 60px 0 10px 0;
+    margin: 60px 0px;
 }
 
 .about
@@ -558,12 +558,6 @@ a:hover
 {
     font-size: 20px;
     margin: 10px 0;
-}
-
-#top
-{
-    text-align: center;
-    margin-top: 100px;
 }
 
 .svg-wrapper
