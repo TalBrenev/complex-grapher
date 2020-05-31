@@ -2,8 +2,9 @@
     (:require [reagent.core :as r]
               [reagent.dom :as d]
               [cljsjs.smooth-scroll]
-              [complex-grapher.ui.main :refer [main]]
-              [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]))
+              [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]
+              [complex-grapher.ui.graph :refer [graph]]
+              [complex-grapher.ui.controls :refer [controls]]))
 
 (defn get-time []
   (.getTime (js/Date.)))
@@ -24,7 +25,11 @@
    [no-webgl (r/cursor app-state [:webgl?])]
    [:div {:class "wrapper"}
     [:h1 {:class "title"} "The Complex Grapher"]
-    [main app-state]
+    [:div {:class "main"}
+     [graph (r/cursor app-state [:webgl?])
+            (r/cursor app-state [:last-resize])
+            (r/cursor app-state [:graph])]
+     [controls (r/cursor app-state [:graph])]]
     [:p {:class "footnote"} "Created by " [:a {:href "https://www.talbrenev.com/"} "Tal Brenev"]]]])
 
 (defn setup-smooth-scroll []
@@ -35,11 +40,16 @@
                      "resize"
                      #(swap! app-state assoc :last-resize (get-time))))
 
+(defn render-app []
+  (d/render app (.getElementById js/document "app")))
+
+(defn init []
+  (setup-smooth-scroll)
+  (setup-resize-listener)
+  (render-app)
+  (check-webgl (r/cursor app-state [:webgl?])))
+
 (.addEventListener
   js/window
   "load"
-  (fn []
-    (setup-smooth-scroll)
-    (setup-resize-listener)
-    (d/render app (.getElementById js/document "app"))
-    (check-webgl (r/cursor app-state [:webgl?]))))
+  init)
