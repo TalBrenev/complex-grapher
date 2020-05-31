@@ -17,7 +17,7 @@
    [no-webgl (r/cursor app-state [:webgl?])]
    [:div {:class "wrapper"}
     [:h1 {:class "title"} "The Complex Grapher"]
-    [main]
+    [main app-state]
     [:p {:class "footnote"} "Created by " [:a {:href "https://www.talbrenev.com/"} "Tal Brenev"]]]])
 
 (defn setup-smooth-scroll []
