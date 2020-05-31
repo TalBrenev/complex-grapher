@@ -53,4 +53,6 @@
 (.addEventListener
   js/window
   "load"
-  #(d/render main (.getElementById js/document "app")))
+  (fn []
+    (.init js/smoothScroll #js {:speed 850})
+    (d/render main (.getElementById js/document "app"))))
