@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - v[0-9]*
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
