@@ -12,10 +12,6 @@
   "Gets the element with the given id in the DOM."
   (.getElementById js/document id))
 
-(defn add-event-listener [element-id event handler]
-  "Adds an event listener to an element in the DOM."
-  (.addEventListener (get-element element-id) event handler))
-
 (defn get-attr [id attr]
   "Gets an attribute of the element with the given id."
   (aget (get-element id) attr))

@@ -142,7 +142,6 @@ button:active
     bottom: 0;
     z-index: 5;
     background-color: rgba(0, 0, 0, 0.4);
-    opacity: 0;
     -webkit-transition: opacity 0.5s;
     transition: opacity 0.5s;
     pointer-events: none;
@@ -263,7 +262,7 @@ a:hover
     border-radius: 10px;
 }
 
-#graphlbl
+.graphlbl
 {
     position: absolute;
     right: 10px;
@@ -278,7 +277,6 @@ a:hover
 
 .no-webgl-wrapper
 {
-    visibility: hidden;
     position: absolute;
     top: 0px;
     bottom: 0px;
@@ -423,7 +421,7 @@ a:hover
         top: -50px;
         width: 48%;
     }
-    #ctr-show
+    .ctr-show
     {
         position: relative;
         height: 50px;
@@ -434,7 +432,7 @@ a:hover
         margin: auto;
         box-shadow: 0 -5px 15px #333;
     }
-    #ctr-show:active
+    .ctr-show:active
     {
         box-shadow: 0 -5px 15px #222;
         transform: none;
@@ -495,7 +493,7 @@ a:hover
         margin-top: 5px;
         top: -35px;
     }
-    #ctr-show
+    .ctr-show
     {
         height: 35px;
         top: -35px;
@@ -514,7 +512,7 @@ a:hover
         border-radius: 8px;
         font-size: 13px;
     }
-    #graphlbl
+    .graphlbl
     {
         bottom: auto;
         top: 10px;
@@ -532,7 +530,7 @@ a:hover
     top: 100%;
     left: 0;
     right: 0;
-    margin: 60px 0 10px 0;
+    margin: 60px 0px;
 }
 
 .about
@@ -560,12 +558,6 @@ a:hover
 {
     font-size: 20px;
     margin: 10px 0;
-}
-
-#top
-{
-    text-align: center;
-    margin-top: 100px;
 }
 
 .svg-wrapper
