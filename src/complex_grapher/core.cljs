@@ -4,7 +4,8 @@
               [cljsjs.smooth-scroll]
               [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]
               [complex-grapher.ui.graph :refer [graph]]
-              [complex-grapher.ui.controls :refer [controls]]))
+              [complex-grapher.ui.controls :refer [controls]]
+              [complex-grapher.ui.about :refer [about]]))
 
 (defn get-time []
   (.getTime (js/Date.)))
@@ -30,7 +31,8 @@
             (r/cursor app-state [:last-resize])
             (r/cursor app-state [:graph])]
      [controls (r/cursor app-state [:graph])]]
-    [:p {:class "footnote"} "Created by " [:a {:href "https://www.talbrenev.com/"} "Tal Brenev"]]]])
+    [:p {:class "footnote"} "Created by " [:a {:href "https://www.talbrenev.com/"} "Tal Brenev"]]
+    [about]]])
 
 (defn setup-smooth-scroll []
   (.init js/smoothScroll #js {:speed 850}))
@@ -40,6 +42,11 @@
                      "resize"
                      #(swap! app-state assoc :last-resize (get-time))))
 
+(defn typeset-math []
+  (-> js/MathJax
+      (.Hub)
+      (.Typeset)))
+
 (defn render-app []
   (d/render app (.getElementById js/document "app")))
 
@@ -47,7 +54,8 @@
   (setup-smooth-scroll)
   (setup-resize-listener)
   (render-app)
-  (check-webgl (r/cursor app-state [:webgl?])))
+  (check-webgl (r/cursor app-state [:webgl?]))
+  (typeset-math))
 
 (.addEventListener
   js/window
