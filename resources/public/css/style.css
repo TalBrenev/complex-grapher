@@ -567,8 +567,13 @@ a:hover
     border: 1px solid #383838;
     box-shadow: 0 0 10px #333;
     width: 100%;
-    max-width: 450px;
-    height: 300px;
+    max-width: 400px;
+}
+
+.svg-wrapper img
+{
+    width: 100%;
+    height: auto;
 }
 
 @media (max-width: 768px)
@@ -588,10 +593,6 @@ a:hover
     .bigmath
     {
         font-size: 13px !important;
-    }
-    .svg-wrapper
-    {
-        height: 200px;
     }
 }
 
