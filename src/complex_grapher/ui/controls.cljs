@@ -1,7 +1,8 @@
 (ns complex-grapher.ui.controls
     (:require [reagent.core :as r]
               [goog.string :refer [unescapeEntities]]
-              [complex-grapher.complex-arithmetic :refer [i add sub mul complex->str]]))
+              [complex-grapher.complex-arithmetic :refer [i add sub mul complex->str]]
+              [complex-grapher.ui.textbox :refer [textbox]]))
 
 ;; How much the graph shifts/zooms by when the zoom/shift buttons are used
 (defonce zoom-factor 2)
@@ -16,14 +17,10 @@
         (if @show "Hide Controls" "Show Controls")]
        [:div {:class "ctrrow"}
         [:p {:class "label"} "Function:"]
-        [:input {:type "textbox"
-                 :defaultValue (:function @graph-state)
-                 :onInput #(swap! graph-state assoc :function (.-value (.-target %)))}]]
+        [textbox (r/cursor graph-state [:function])]]
        [:div {:class "ctrrow"}
         [:p {:class "label"} "Magnitude modulus:"]
-        [:input {:type "textbox"
-                 :defaultValue (:modulus @graph-state)
-                 :onInput #(swap! graph-state assoc :modulus (.-value (.-target %)))}]]
+        [textbox (r/cursor graph-state [:modulus])]]
        [:div {:class "ctrrow"}
         [:p {:class "label"} "Top-left corner:"]
         [:p {:class "info"} (complex->str (:top-left-corner @graph-state))]]
