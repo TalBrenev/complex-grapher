@@ -4,9 +4,36 @@
               [complex-grapher.complex-arithmetic :refer [i add sub mul complex->str]]
               [complex-grapher.ui.textbox :refer [textbox]]))
 
-;; How much the graph shifts/zooms by when the zoom/shift buttons are used
-(defonce zoom-factor 2)
-(defonce shift-factor 0.3)
+(defn shift-factor [direction {:keys [width height zoom]}]
+  (case direction
+    :vertical   (mul i (* 0.3 height zoom))
+    :horizontal (* 0.3 width zoom)))
+
+(defn shift-up [graph-state]
+  (swap!
+    graph-state
+    #(update % :centre sub (shift-factor :vertical %))))
+
+(defn shift-left [graph-state]
+  (swap!
+    graph-state
+    #(update % :centre sub (shift-factor :horizontal %))))
+
+(defn shift-right [graph-state]
+  (swap!
+    graph-state
+    #(update % :centre add (shift-factor :horizontal %))))
+
+(defn shift-down [graph-state]
+  (swap!
+    graph-state
+    #(update % :centre add (shift-factor :vertical %))))
+
+(defn zoom-in [graph-state]
+  (swap! graph-state update :zoom / 2))
+
+(defn zoom-out [graph-state]
+  (swap! graph-state update :zoom * 2))
 
 (defn controls [graph-state]
   (let [show (r/atom false)]
@@ -31,36 +58,28 @@
         [:div {:class "arrows"}
          [:div {:class "arrowvert"}
           [:button
-           {:onClick (fn [] (swap!
-                              graph-state
-                              #(update % :centre sub (mul (* shift-factor (:height @graph-state) (:zoom %)) i))))}
+           {:onClick #(shift-up graph-state)}
            (unescapeEntities "&#8593;")]]
          [:div {:class "arrowhori"}
           [:button
-           {:onClick (fn [] (swap!
-                              graph-state
-                              #(update % :centre sub (* shift-factor (:width @graph-state) (:zoom %)))))}
+           {:onClick #(shift-left graph-state)}
            (unescapeEntities "&#8592;")]]
          [:div {:class "arrowhori"}
           [:button
-           {:onClick (fn [] (swap!
-                              graph-state
-                              #(update % :centre add (* shift-factor (:width @graph-state) (:zoom %)))))}
+           {:onClick #(shift-right graph-state)}
            (unescapeEntities "&#8594;")]]
          [:div {:class "arrowvert"}
           [:button
-           {:onClick (fn [] (swap!
-                              graph-state
-                              #(update % :centre add (mul (* shift-factor (:height @graph-state) (:zoom %)) i))))}
+           {:onClick #(shift-down graph-state)}
            (unescapeEntities "&#8595;")]]]
         [:div {:class "zooms"}
          [:div {:class "zoom"}
           [:button
-           {:onClick #(swap! graph-state update :zoom * 2)}
+           {:onClick #(zoom-out graph-state)}
            (unescapeEntities "&#8211;")]]
          [:div {:class "zoom"}
           [:button
-           {:onClick #(swap! graph-state update :zoom / 2)}
+           {:onClick #(zoom-in graph-state)}
            "+"]]]]
        [:div {:class "ctrrow ctrrow-b"}
         [:a {:data-scroll "" :href "#about"}
