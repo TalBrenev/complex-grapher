@@ -42,11 +42,6 @@
                      "resize"
                      #(swap! app-state assoc :last-resize (get-time))))
 
-(defn typeset-math []
-  (-> js/MathJax
-      (.Hub)
-      (.Typeset)))
-
 (defn render-app []
   (d/render app (.getElementById js/document "app")))
 
@@ -54,8 +49,7 @@
   (setup-smooth-scroll)
   (setup-resize-listener)
   (render-app)
-  (check-webgl (r/cursor app-state [:webgl?]))
-  (typeset-math))
+  (check-webgl (r/cursor app-state [:webgl?])))
 
 (.addEventListener
   js/window
