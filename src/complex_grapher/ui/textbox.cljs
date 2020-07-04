@@ -3,6 +3,5 @@
 
 (defn textbox [value]
   [:input {:type "textbox"
-           :defaultValue @value
            :value @value
            :onInput #(reset! value (-> % (.-target) (.-value)))}])
