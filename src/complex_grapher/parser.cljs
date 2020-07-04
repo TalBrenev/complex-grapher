@@ -45,7 +45,7 @@
           (case (count found-tokens)
             0 (throw "Invalid Expression")
             1 (first found-tokens)
-            2 (if (in? (:type previous-token) [nil :operator :left-bracket])
+              (if (in? (:type previous-token) [nil :function :operator :left-bracket])
                 (find-first #(= (:type %) :function) found-tokens)
                 (find-first #(= (:type %) :operator) found-tokens)))))))
 

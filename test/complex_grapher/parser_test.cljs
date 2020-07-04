@@ -75,6 +75,14 @@
       (is (= (value-ast (parse "-i"))
              [negate i])))
 
+    (testing "the double negation of a number"
+      (is (= (value-ast (parse "--z"))
+             [negate [negate "z"]])))
+
+    (testing "the triple negation of a number"
+      (is (= (value-ast (parse "---i"))
+             [negate [negate [negate i]]])))
+
     (testing "the real part of a number"
       (is (= (value-ast (parse "re(z)"))
              [re "z"])))
