@@ -279,12 +279,18 @@ a:hover
     position: absolute;
     right: 10px;
     bottom: 10px;
-    font-size: 20px;
+    font-size: 17px;
     color: white;
     margin: 0;
     line-height: 1em;
-    text-shadow: 1px 1px 1px black;
+    text-shadow: -1px -1px 1px black, 1px -1px 1px black, -1px 1px 1px black, 1px 1px 1px black;
     pointer-events: none;
+}
+
+.graphlbl-row
+{
+    margin: 5px 0;
+    text-align: right;
 }
 
 .no-webgl-wrapper
@@ -534,7 +540,7 @@ a:hover
     {
         bottom: auto;
         top: 10px;
-        font-size: 16px;
+        font-size: 13px;
     }
 }
 
