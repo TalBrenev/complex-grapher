@@ -284,6 +284,7 @@ a:hover
     margin: 0;
     line-height: 1em;
     text-shadow: 1px 1px 1px black;
+    pointer-events: none;
 }
 
 .no-webgl-wrapper
