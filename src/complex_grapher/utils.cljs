@@ -27,3 +27,9 @@
 (defn height [id]
   "Gets the height of an element."
   (get-attr id "scrollHeight"))
+
+(defn pos [id]
+  "The x and y coordinates of an element."
+  (let [bounding-rect (.getBoundingClientRect (get-element id))]
+    {:x (.-left bounding-rect)
+     :y (.-top bounding-rect)}))

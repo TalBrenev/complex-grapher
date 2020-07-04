@@ -1,8 +1,8 @@
 (ns complex-grapher.ui.graph
     (:require [reagent.core :as r]
-              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian re im add]]
+              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian re im add complex->str]]
               [complex-grapher.parser :refer [parse]]
-              [complex-grapher.utils :refer [width height]]
+              [complex-grapher.utils :refer [width height pos]]
               [complex-grapher.webgl :as webgl]))
 
 (defonce canvas-id "canvas")
@@ -17,8 +17,14 @@
   (add centre (complex-from-cartesian (* 0.5 zoom (width canvas-id))
                                       (- (* 0.5 zoom (height canvas-id))))))
 
+(defn graphpos->complex [centre zoom pos-x pos-y]
+  "Computes the complex number represented by a position on the graph."
+  (add (top-left-corner centre zoom)
+       (complex-from-cartesian (* zoom pos-x) (- (* zoom pos-y)))))
+
 (defn graph [webgl? last-resize graph-state]
-  (let [show-overlay? (r/atom false)]
+  (let [show-overlay? (r/atom false)
+        mouse-pos     (r/atom nil)]
     (fn []
       @last-resize ;; Dereference to force render on window size change
 
@@ -46,5 +52,12 @@
        [:div {:class "overlay" :style (if @show-overlay? {:opacity 1} {:opacity 0})}
         [:p {:class "overlaytext"} "Invalid Function"]]
        [:div {:class "graph"}
-        [:canvas {:id canvas-id}]
-        [:p {:class "graphlbl"}]]])))
+        [:canvas {:id canvas-id
+                  :onMouseLeave #(reset! mouse-pos nil)
+                  :onMouseMove  #(reset! mouse-pos (let [{:keys [x y]} (pos canvas-id)]
+                                                     {:x (- (.-clientX %) x)
+                                                      :y (- (.-clientY %) y)}))}]
+        [:p {:class "graphlbl"}
+         (if-let [{:keys [x y]} @mouse-pos]
+           (let [{:keys [centre zoom]} @graph-state]
+             (complex->str (graphpos->complex centre zoom x y))))]]])))
