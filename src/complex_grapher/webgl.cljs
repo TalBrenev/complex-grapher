@@ -168,7 +168,7 @@
      highp vec2 f = "(ast->glsl ast)";
 
      highp float modulus = float(" modulus ");
-     highp float h = -floor(degrees(arg(f))) + 180.0;
+     highp float h = mod(degrees(arg(f)), 360.0);
      highp float v = mod(mag(f), modulus) / modulus;
      if (mod(mag(f), 2.0*modulus) > modulus) {
        v = 1.0 - v;
