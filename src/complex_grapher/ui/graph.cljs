@@ -32,13 +32,15 @@
         (try
           (let [{:keys [centre zoom function modulus]} @graph-state
                   top-left (top-left-corner centre zoom)
-                  bottom-right (bottom-right-corner centre zoom)]
+                  bottom-right (bottom-right-corner centre zoom)
+                  ast (parse function)]
               (swap! graph-state assoc :top-left-corner top-left)
               (swap! graph-state assoc :bottom-right-corner bottom-right)
               (swap! graph-state assoc :width (width canvas-id))
               (swap! graph-state assoc :height (height canvas-id))
+              (swap! graph-state assoc :ast ast)
               (webgl/draw canvas-id
-                          (parse function)
+                          ast
                           modulus
                           (re top-left)
                           (re bottom-right)
@@ -59,9 +61,9 @@
                                                       :y (- (.-clientY %) y)}))}]
         [:div {:class "graphlbl"}
          (if-let [{:keys [x y]} @mouse-pos]
-           (let [{:keys [centre zoom function]} @graph-state
+           (let [{:keys [centre zoom ast]} @graph-state
                  z (graphpos->complex centre zoom x y)
-                 fz (evaluate (parse function) z)]
+                 fz (if ast (evaluate ast z))]
              [:div
               [:p {:class "graphlbl-row"} (str "z = " (complex->str z))]
-              [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))]]))]]])))
+              (if fz [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))])]))]]])))
