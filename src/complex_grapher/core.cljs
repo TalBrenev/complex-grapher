@@ -32,7 +32,8 @@
      [graph (r/cursor app-state [:webgl?])
             (r/cursor app-state [:last-resize])
             (r/cursor app-state [:graph])]
-     [controls (r/cursor app-state [:graph])]]
+     [controls (r/cursor app-state [:graph])
+               (:graph initial-state)]]
     [:p {:class "footnote"} "Created by " [:a {:href "https://www.talbrenev.com/"} "Tal Brenev"]]
     [about]]])
 

@@ -35,7 +35,7 @@
 (defn zoom-out [graph-state]
   (swap! graph-state update :zoom * 2))
 
-(defn controls [graph-state]
+(defn controls [graph-state initial-graph-state]
   (let [show (r/atom false)]
     (fn []
       [:div {:class "control" :style (if @show {:bottom "0px"} {})}
@@ -82,5 +82,11 @@
            {:onClick #(zoom-in graph-state)}
            "+"]]]]
        [:div {:class "ctrrow ctrrow-b"}
+        [:div
+         [:button
+          {:class "reset-btn"
+           :onClick #(reset! graph-state initial-graph-state)}
+          "Reset"]]]
+       [:div {:class "ctrrow ctrrow-b"}
         [:a {:data-scroll "" :href "#about"}
-         [:p {:class "learnmore"} "Click here to learn more"]]]])))
+         [:p {:class "learnmore"} "Learn more"]]]])))
