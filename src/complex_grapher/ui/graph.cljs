@@ -57,7 +57,7 @@
                   :onMouseMove  #(reset! mouse-pos (let [{:keys [x y]} (pos canvas-id)]
                                                      {:x (- (.-clientX %) x)
                                                       :y (- (.-clientY %) y)}))}]
-        [:p {:class "graphlbl"}
+        [:div {:class "graphlbl"}
          (if-let [{:keys [x y]} @mouse-pos]
            (let [{:keys [centre zoom function]} @graph-state
                  z (graphpos->complex centre zoom x y)
