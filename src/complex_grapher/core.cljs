@@ -10,16 +10,18 @@
 (defn get-time []
   (.getTime (js/Date.)))
 
-(defonce app-state (r/atom {:webgl?      nil
-                            :last-resize (get-time)
-                            :graph       {:centre              0
-                                          :zoom                0.01
-                                          :function            "z"
-                                          :modulus             0.5
-                                          :top-left-corner     0
-                                          :bottom-right-corner 0
-                                          :width               0
-                                          :height              0}}))
+(def initial-state {:webgl? nil
+                    :last-resize (get-time)
+                    :graph       {:centre              0
+                                  :zoom                0.01
+                                  :function            "z"
+                                  :modulus             0.5
+                                  :top-left-corner     0
+                                  :bottom-right-corner 0
+                                  :width               0
+                                  :height              0}})
+
+(defonce app-state (r/atom initial-state))
 
 (defn app []
   [:div
