@@ -12,7 +12,7 @@
 (defn shift-up [graph-state]
   (swap!
     graph-state
-    #(update % :centre sub (shift-factor :vertical %))))
+    #(update % :centre add (shift-factor :vertical %))))
 
 (defn shift-left [graph-state]
   (swap!
@@ -27,7 +27,7 @@
 (defn shift-down [graph-state]
   (swap!
     graph-state
-    #(update % :centre add (shift-factor :vertical %))))
+    #(update % :centre sub (shift-factor :vertical %))))
 
 (defn zoom-in [graph-state]
   (swap! graph-state update :zoom / 2))

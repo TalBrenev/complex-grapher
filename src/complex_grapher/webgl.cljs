@@ -163,7 +163,7 @@
    {
      highp vec2 z = vec2(
        float("(/ (- right-x left-x) 2)") * x + float("(/ (+ left-x right-x) 2)"),
-       float("(/ (- bottom-y top-y) 2)") * y + float("(/ (+ top-y bottom-y) 2)"));
+       float("(/ (- top-y bottom-y) 2)") * y + float("(/ (+ top-y bottom-y) 2)"));
 
      highp vec2 f = "(ast->glsl ast)";
 
