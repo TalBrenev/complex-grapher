@@ -13,9 +13,7 @@
 
   :source-paths ["src"]
 
-  :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
-            "fig:build" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
-            "fig:min"   ["run" "-m" "figwheel.main" "-bo" "min"]}
+  :aliases {"fig:min" ["run" "-m" "figwheel.main" "-bo" "min"]}
 
   :plugins [[cider/cider-nrepl "0.21.1"]]
 
