@@ -13,7 +13,7 @@
 
   :source-paths ["src"]
 
-  :aliases {"fig:min" ["run" "-m" "figwheel.main" "-bo" "min"]}
+  :aliases {"build" ["run" "-m" "figwheel.main" "-bo" "min"]}
 
   :plugins [[cider/cider-nrepl "0.21.1"]]
 

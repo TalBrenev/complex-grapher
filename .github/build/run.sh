@@ -4,7 +4,7 @@
 set -e
 
 lein deps
-lein fig:min
+lein build
 mkdir -p build/complexgrapher
 cp -r resources/public/* build/complexgrapher
 rm -r build/complexgrapher/cljs-out
