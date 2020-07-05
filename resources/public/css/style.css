@@ -317,6 +317,18 @@ a:hover
     background-size: contain;
 }
 
+/*Hide arrows on numeric inputs*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button
+{
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number]
+{
+  -moz-appearance: textfield;
+}
+
 
 
 /*Responsive CSS*/

@@ -47,7 +47,7 @@
         [textbox (r/cursor graph-state [:function])]]
        [:div {:class "ctrrow"}
         [:p {:class "label"} "Magnitude modulus:"]
-        [textbox (r/cursor graph-state [:modulus])]]
+        [textbox (r/cursor graph-state [:modulus]) :numeric? true :min 0]]
        [:div {:class "ctrrow"}
         [:p {:class "label"} "Top-left corner:"]
         [:p {:class "info"} (complex->str (:top-left-corner @graph-state))]]
