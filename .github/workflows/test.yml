@@ -7,7 +7,7 @@ on:
       - '!master'
 
 jobs:
-  release:
+  test:
     runs-on: ubuntu-latest
 
     steps:
