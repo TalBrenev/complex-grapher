@@ -20,9 +20,9 @@
   :plugins [[cider/cider-nrepl "0.21.1"]]
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.0"]
-                                  [com.bhauman/rebel-readline-cljs "0.1.4"]
                                   [cider/piggieback "0.4.0"]]
-                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
+                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
+                                  :init (do (require 'figwheel.main.api) (future (figwheel.main.api/start "dev")))}
                    :clean-targets ^{:protect false} ["resources/public/cljs-out"
                                                      "resources/public/js"
                                                      :target-path]}})
