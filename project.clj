@@ -8,12 +8,14 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339"]
+                 [olical/cljs-test-runner "3.7.0"]
                  [cljsjs/smooth-scroll "10.2.1-0"]
                  [reagent "0.10.0"]]
 
   :source-paths ["src"]
 
-  :aliases {"build" ["run" "-m" "figwheel.main" "-bo" "min"]}
+  :aliases {"build" ["run" "-m" "figwheel.main" "-bo" "min"]
+            "test"  ["run" "-m" "cljs-test-runner.main"]}
 
   :plugins [[cider/cider-nrepl "0.21.1"]]
 
@@ -23,4 +25,5 @@
                                   :init (do (require 'figwheel.main.api) (future (figwheel.main.api/start "dev")))}
                    :clean-targets ^{:protect false} ["resources/public/cljs-out"
                                                      "resources/public/js"
+                                                     "cljs-test-runner-out"
                                                      :target-path]}})

@@ -15,3 +15,4 @@ pom.xml
 .cpcache/
 .rebel_readline_history
 *.swp
+/cljs-test-runner-out/
