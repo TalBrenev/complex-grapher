@@ -1,6 +1,7 @@
 (ns complex-grapher.complex-arithmetic
   (:require [goog.string :as gstring]
-            [goog.string.format]))
+            [goog.string.format]
+            [complex-grapher.parser :as parser]))
 
 (defprotocol ComplexArithmetic "Perform the basic arithmetic of the complex numbers."
   (re  [this] "The real part of the complex number.")
@@ -92,3 +93,42 @@
   (let [a (pow Math/E (mul i x))
         b (div 1 a)]
     (div (sub a b) (mul i (add a b)))))
+
+(defn _evaluate [transformed-ast z]
+  (cond
+    (= transformed-ast "z")  z
+    (not (seq? transformed-ast)) transformed-ast
+    :else                    (apply
+                               (first transformed-ast)
+                               (map #(_evaluate % z) (rest transformed-ast)))))
+
+(def token-map
+  {:re     re
+   :im     im
+   :arg    arg
+   :mag    mag
+   :sin    sin
+   :cos    cos
+   :tan    tan
+   :log    log
+   :negate negate
+   :z      "z"
+   :e      Math/E
+   :pi     Math/PI
+   :i      i
+   :add    add
+   :sub    sub
+   :mul    mul
+   :div    div
+   :pow    pow})
+
+(defn evaluate-ast [ast z]
+  (_evaluate
+    (parser/transform-ast
+      ast
+      token-map
+      js/parseFloat)
+    z))
+
+(defn evaluate [expression z]
+  (evaluate-ast (parser/parse expression) z))

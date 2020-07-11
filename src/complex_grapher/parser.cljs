@@ -1,33 +1,28 @@
 (ns complex-grapher.parser
-  (:require [complex-grapher.complex-arithmetic :refer [ComplexArithmetic
-                                                        i re im arg mag
-                                                        add sub mul div
-                                                        negate pow log
-                                                        sin cos tan]]
-            [complex-grapher.utils :refer [find-first in?]]
+  (:require [complex-grapher.utils :refer [find-first in?]]
             [clojure.string :as s]))
 
 (def tokens [{:token "("     :type :left-bracket}
              {:token ")"     :type :right-bracket}
-             {:token "re"    :type :function   :value re}
-             {:token "im"    :type :function   :value im}
-             {:token "arg"   :type :function   :value arg}
-             {:token "mag"   :type :function   :value mag}
-             {:token "sin"   :type :function   :value sin}
-             {:token "cos"   :type :function   :value cos}
-             {:token "tan"   :type :function   :value tan}
-             {:token "log"   :type :function   :value log}
-             {:token "ln"    :type :function   :value log}
-             {:token "-"     :type :function   :value negate}
-             {:token "z"     :type :number     :value "z"}
-             {:token "e"     :type :number     :value Math/E}
-             {:token "pi"    :type :number     :value Math/PI}
-             {:token "i"     :type :number     :value i}
-             {:token "+"     :type :operator   :value add   :precedence 1   :associativity :left}
-             {:token "-"     :type :operator   :value sub   :precedence 1   :associativity :left}
-             {:token "*"     :type :operator   :value mul   :precedence 2   :associativity :left}
-             {:token "/"     :type :operator   :value div   :precedence 2   :associativity :left}
-             {:token "^"     :type :operator   :value pow   :precedence 3   :associativity :right}])
+             {:token "re"    :type :function   :value :re}
+             {:token "im"    :type :function   :value :im}
+             {:token "arg"   :type :function   :value :arg}
+             {:token "mag"   :type :function   :value :mag}
+             {:token "sin"   :type :function   :value :sin}
+             {:token "cos"   :type :function   :value :cos}
+             {:token "tan"   :type :function   :value :tan}
+             {:token "log"   :type :function   :value :log}
+             {:token "ln"    :type :function   :value :log}
+             {:token "-"     :type :function   :value :negate}
+             {:token "z"     :type :number     :value :z}
+             {:token "e"     :type :number     :value :e}
+             {:token "pi"    :type :number     :value :pi}
+             {:token "i"     :type :number     :value :i}
+             {:token "+"     :type :operator   :value :add   :precedence 1   :associativity :left}
+             {:token "-"     :type :operator   :value :sub   :precedence 1   :associativity :left}
+             {:token "*"     :type :operator   :value :mul   :precedence 2   :associativity :left}
+             {:token "/"     :type :operator   :value :div   :precedence 2   :associativity :left}
+             {:token "^"     :type :operator   :value :pow   :precedence 3   :associativity :right}])
 
 (defn strip-starting-whitespace [expression]
   (s/replace expression #"^\s+" ""))
@@ -36,7 +31,7 @@
   (if-let [number (re-find #"^\d*\.?\d+|^\d+\.?\d*" expression)]
     {:token number
      :type  :number
-     :value (js/parseFloat number)}))
+     :value number}))
 
 (defn first-token [previous-token expression]
   (if-not (empty? expression)
@@ -104,6 +99,11 @@
       (recur (apply-top-operator ast-stack operator-stack) operator)
       [ast-stack (cons operator operator-stack)])))
 
+(defn value-ast [ast]
+  (if (map? ast)
+    (:value ast)
+    (map value-ast ast)))
+
 (defn parse [expression]
   (if (empty? expression)
     (throw "Invalid Expression"))
@@ -119,12 +119,11 @@
                    :operator      (add-operator-to-stack [ast-stack operator-stack] token)))
                [(list) (list)])
        (apply-remaining-operators)
-       (first)))
+       (first)
+       (value-ast)))
 
-(defn evaluate
-  ([ast]
-   (evaluate ast {}))
-  ([ast z]
-   (if (map? ast)
-     (if (= (:value ast) "z") z (:value ast))
-     (apply (:value (first ast)) (map #(evaluate % z) (rest ast))))))
+(defn transform-ast [ast token-map num-transform]
+  (cond
+    (keyword? ast) (ast token-map)
+    (string? ast)  (num-transform ast)
+    :else          (map #(transform-ast % token-map num-transform) ast)))

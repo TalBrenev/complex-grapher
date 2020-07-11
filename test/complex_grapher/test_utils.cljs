@@ -19,8 +19,3 @@
   ([x y delta]
    (and (close? (re x) (re y) delta)
         (close? (im x) (im y) delta))))
-
-(defn value-ast [ast]
-  (if (map? ast)
-    (:value ast)
-    (map value-ast ast)))

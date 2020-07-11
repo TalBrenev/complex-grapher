@@ -6,7 +6,8 @@
                                                         re im arg mag
                                                         add sub mul div
                                                         pow log
-                                                        sin cos tan]])
+                                                        sin cos tan
+                                                        evaluate]])
   (:require-macros [complex-grapher.test-utils :refer [are-close is-complex-close]]))
 
 (deftest complex-arithmetic
@@ -162,4 +163,21 @@
                         (complex-from-cartesian -0.13352640702 0)))
     (testing "a complex number"
       (is-complex-close (tan (complex-from-cartesian 1 2))
-                        (complex-from-cartesian 0.033812826 1.014793616)))))
+                        (complex-from-cartesian 0.033812826 1.014793616))))
+
+  (testing "evaluate"
+    (testing "a constant"
+      (is-complex-close (evaluate "pi" 2)
+                        (complex-from-cartesian Math/PI 0)))
+
+    (testing "the identity function"
+      (is-complex-close (evaluate "z" (complex-from-cartesian 1 2))
+                        (complex-from-cartesian 1 2)))
+
+    (testing "an expression with simple arithmetic"
+      (is-complex-close (evaluate "z+1-3i" (complex-from-cartesian 1 2))
+                        (complex-from-cartesian 2 -1)))
+
+    (testing "an expression with functions"
+      (is-complex-close (evaluate "sin(z+i)+cos(z+pi)i-0.17520119364380145688i" (complex-from-cartesian 0 0))
+                        (complex-from-cartesian 0 0)))))

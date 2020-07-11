@@ -1,7 +1,7 @@
 (ns complex-grapher.ui.graph
     (:require [reagent.core :as r]
-              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian re im add complex->str]]
-              [complex-grapher.parser :refer [parse evaluate]]
+              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian re im add complex->str evaluate-ast]]
+              [complex-grapher.parser :refer [parse]]
               [complex-grapher.utils :refer [width height pos]]
               [complex-grapher.webgl :as webgl]))
 
@@ -63,7 +63,7 @@
          (if-let [{:keys [x y]} @mouse-pos]
            (let [{:keys [centre zoom ast]} @graph-state
                  z (graphpos->complex centre zoom x y)
-                 fz (if ast (evaluate ast z))]
+                 fz (if ast (evaluate-ast ast z))]
              [:div
               [:p {:class "graphlbl-row"} (str "z = " (complex->str z))]
               (if fz [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))])]))]]])))
