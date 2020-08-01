@@ -129,10 +129,11 @@
     (string? ast)  (num-transform ast)
     :else          (map #(transform-ast % token-map num-transform) ast)))
 
-(s/def ::token (s/or :named-token   #{:re :im :arg :mag :sin :cos :tan :log :negate :z :e :pi :i :add :sub :mul :div :pow}
-                     :literal-token (s/and string? #(re-matches #"^\d*\.?\d+$|^\d+\.?\d*$" %))))
+(s/def ::token #{:re :im :arg :mag :sin :cos :tan :log :negate :z :e :pi :i :add :sub :mul :div :pow})
 
-(s/def ::ast (s/or :token ::token
+(s/def ::literal (s/and string? #(re-matches #"^\d*\.?\d+$|^\d+\.?\d*$" %)))
+
+(s/def ::ast (s/or :token (s/or :token ::token :literal ::literal)
                    :ast   (s/coll-of ::ast :kind list?)))
 
 (s/fdef parse
@@ -140,4 +141,6 @@
   :ret  ::ast)
 
 (s/fdef transform-ast
-  :args (s/cat :ast ::ast))
+  :args (s/cat :ast           ::ast
+               :token-map     (s/map-of ::token (constantly true))
+               :num-transform (s/fspec :args ::literal :ret (constantly true))))
