@@ -1,37 +1,28 @@
 (ns complex-grapher.webgl
   (:require [clojure.string :as s]
+            [complex-grapher.parser :as parser]
             [complex-grapher.complex-arithmetic :refer [re im]]
             [complex-grapher.utils :refer [set-attr width height]]))
 
-(defn detect-webgl [canvas-id]
-  (let [gl (.getContext (.getElementById js/document canvas-id) "webgl")]
-    (and gl (instance? js/WebGLRenderingContext gl))))
+(defn- parse [expression]
+  (-> expression
+      (parser/parse)
+      (parser/transform-ast
+        (merge {:z  "z"
+                :e  "vec2(exp(1.0),0.0)"
+                :pi "vec2(radians(180.0),0.0)"
+                :i  "vec2(0.0,1.0)"}
+               (into {} (mapv
+                          #(vector % (str "comp" (s/capitalize (name %))))
+                          [:re :im :arg :mag :sin :cos :tan :log :negate :add :sub :mul :div :pow])))
+        #(str "vec2(float("(js/parseFloat %)"), 0.0))"))))
 
-(def vs-src
-  "attribute vec4 aVertexPosition;
-   varying highp float x;
-   varying highp float y;
-   void main() {  gl_Position = aVertexPosition; x = aVertexPosition[0]; y = aVertexPosition[1]; }")
+(defn- ast->glsl [ast]
+  (if (string? ast)
+    ast
+    (str (first ast) "(" (s/join "," (map ast->glsl (rest ast))) ")")))
 
-(defn ast->glsl [ast]
-  (if (map? ast)
-    (case (:token ast)
-      "z"  "z"
-      "e"  "vec2(exp(1.0),0.0)"
-      "pi" "vec2(radians(180.0),0.0)"
-      "i"  "vec2(0.0,1.0)"
-      (str "vec2(float(" (re (:value ast)) "), float(" (im (:value ast)) "))"))
-    (let [funcName (str "comp" (s/capitalize
-                                 (case (:token (first ast))
-                                   "+" "add"
-                                   "*" "mul"
-                                   "/" "div"
-                                   "^" "pow"
-                                   "-" (if (= (:type (first ast)) :function) "negate" "sub")
-                                   (:token (first ast)))))]
-      (str funcName "(" (s/join "," (map ast->glsl (rest ast))) ")"))))
-
-(defn fs-src [ast modulus left-x right-x top-y bottom-y]
+(defn- fs-src [expression modulus left-x right-x top-y bottom-y]
   (str "
    varying highp float x;
    varying highp float y;
@@ -165,7 +156,7 @@
        float("(/ (- right-x left-x) 2)") * x + float("(/ (+ left-x right-x) 2)"),
        float("(/ (- top-y bottom-y) 2)") * y + float("(/ (+ top-y bottom-y) 2)"));
 
-     highp vec2 f = "(ast->glsl ast)";
+     highp vec2 f = "(ast->glsl (parse expression))";
 
      highp float modulus = float(" modulus ");
      highp float h = mod(degrees(arg(f)), 360.0);
@@ -177,20 +168,26 @@
    }
    "))
 
-(defn create-context [canvas-id]
+(def ^:private vs-src
+  "attribute vec4 aVertexPosition;
+   varying highp float x;
+   varying highp float y;
+   void main() {  gl_Position = aVertexPosition; x = aVertexPosition[0]; y = aVertexPosition[1]; }")
+
+(defn- create-context [canvas-id]
   (let [gl (-> (.getElementById js/document canvas-id)
                (.getContext "webgl"))]
     (.clearColor gl 0 0 0 1)
     gl))
 
-(defn create-shader [gl type src]
+(defn- create-shader [gl type src]
   (let [shader (.createShader gl type)]
     (.shaderSource gl shader src)
     (.compileShader gl shader)
     ;(.log js/console (.getShaderInfoLog gl shader))
     shader))
 
-(defn create-shader-program [gl vs-src fs-src]
+(defn- create-shader-program [gl vs-src fs-src]
   (let [vs      (create-shader gl (.-VERTEX_SHADER gl) vs-src)
         fs      (create-shader gl (.-FRAGMENT_SHADER gl) fs-src)
         program (.createProgram gl)]
@@ -199,17 +196,17 @@
     (.linkProgram gl program)
     program))
 
-(defn create-buffer [gl]
+(defn- create-buffer [gl]
   (let [buffer (.createBuffer gl)]
     (.bindBuffer gl (.-ARRAY_BUFFER gl) buffer)
     (.bufferData gl (.-ARRAY_BUFFER gl) (js/Float32Array. #js [-1 1 1 1 -1 -1 1 -1]) (.-STATIC_DRAW gl))
     buffer))
 
-(defn draw [canvas-id ast modulus left-x right-x top-y bottom-y]
+(defn draw [canvas-id expression modulus left-x right-x top-y bottom-y]
   (set-attr canvas-id "width" (width canvas-id))
   (set-attr canvas-id "height" (height canvas-id))
   (let [gl (create-context canvas-id)
-        program (create-shader-program gl vs-src (fs-src ast modulus left-x right-x top-y bottom-y))
+        program (create-shader-program gl vs-src (fs-src expression modulus left-x right-x top-y bottom-y))
         buffer (create-buffer gl)]
     (.viewport gl 0 0 (width canvas-id) (height canvas-id))
     (.clear gl (.-COLOR_BUFFER_BIT gl))
@@ -224,3 +221,7 @@
     (.enableVertexAttribArray gl (.getAttribLocation gl program "aVertexPosition"))
     (.useProgram gl program)
     (.drawArrays gl (.-TRIANGLE_STRIP gl) 0 4)))
+
+(defn detect-webgl [canvas-id]
+  (let [gl (.getContext (.getElementById js/document canvas-id) "webgl")]
+    (and gl (instance? js/WebGLRenderingContext gl))))
