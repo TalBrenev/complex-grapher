@@ -94,7 +94,7 @@
         b (div 1 a)]
     (div (sub a b) (mul i (add a b)))))
 
-(defn _evaluate [transformed-ast z]
+(defn- _evaluate [transformed-ast z]
   (cond
     (= transformed-ast "z")  z
     (not (seq? transformed-ast)) transformed-ast
@@ -102,7 +102,7 @@
                                (first transformed-ast)
                                (map #(_evaluate % z) (rest transformed-ast)))))
 
-(def token-map
+(def ^:private token-map
   {:re     re
    :im     im
    :arg    arg
