@@ -4,6 +4,148 @@
             [complex-grapher.complex-arithmetic :refer [re im]]
             [complex-grapher.utils :refer [set-attr width height]]))
 
+(def ^:private webgl-utility-funcs
+  "
+  highp float arg(highp vec2 z) {
+    return atan(z[1], z[0]);
+  }
+
+  highp float mag(highp vec2 z) {
+    return length(z);
+  }
+
+  highp vec2 toCart(highp float a, highp float m) {
+    return vec2(m*cos(a), m*sin(a));
+  }
+  ")
+
+(def ^:private webgl-funcs
+  [{:token :re
+    :impl "
+          highp vec2 compRe(highp vec2 z) {
+             return vec2(z[0], 0.0);
+          }
+          "}
+
+   {:token :im
+    :impl "
+          highp vec2 compIm(highp vec2 z) {
+            return vec2(z[1], 0.0);
+          }
+          "}
+
+   {:token :arg
+    :impl "
+          highp vec2 compArg(highp vec2 z) {
+            return vec2(arg(z), 0.0);
+          }
+          "}
+
+   {:token :mag
+    :impl "
+          highp vec2 compMag(highp vec2 z) {
+            return vec2(mag(z), 0.0);
+          }
+          "}
+
+   {:token :add
+    :impl "
+          highp vec2 compAdd(highp vec2 z1, highp vec2 z2) {
+            return vec2(z1[0] + z2[0], z1[1] + z2[1]);
+          }
+          "}
+
+   {:token :sub
+    :impl "
+          highp vec2 compSub(highp vec2 z1, highp vec2 z2) {
+            return vec2(z1[0] - z2[0], z1[1] - z2[1]);
+          }
+          "}
+
+   {:token :mul
+    :impl "
+          highp vec2 compMul(highp vec2 z1, highp vec2 z2) {
+            return toCart(arg(z1)+arg(z2), mag(z1)*mag(z2));
+          }
+          "}
+
+   {:token :div
+    :impl "
+          highp vec2 compDiv(highp vec2 z1, highp vec2 z2) {
+            if (mag(z2) == 0.0) {
+              return vec2(0.0, 0.0);
+            }
+            else {
+              return toCart(arg(z1)-arg(z2), mag(z1)/mag(z2));
+            }
+          }
+          "}
+
+   {:token :negate
+    :impl "
+          highp vec2 compNegate(highp vec2 z) {
+            return compSub(vec2(0.0, 0.0), z);
+          }
+          "}
+
+   {:token :pow
+    :impl "
+          highp vec2 compPow(highp vec2 z1, highp vec2 z2) {
+            if (mag(z2) == 0.0) {
+              return vec2(0.0, 0.0);
+            }
+            else {
+              highp float a = arg(z1);
+              highp float b = log(mag(z1));
+              highp float c = z2[0];
+              highp float d = z2[1];
+              return toCart(a*c + b*d, exp(b*c - a*d));
+            }
+          }
+          "}
+
+   {:token :sin
+    :impl "
+          highp vec2 compSin(highp vec2 z) {
+            highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
+            return compDiv(compSub(a, compDiv(vec2(1.0,0.0), a)), compMul(vec2(2.0,0.0), vec2(0.0,1.0)));
+          }
+          "}
+
+   {:token :cos
+    :impl "
+          highp vec2 compCos(highp vec2 z) {
+            highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
+            return compDiv(compAdd(a, compDiv(vec2(1.0,0.0), a)), vec2(2.0,0.0));
+          }
+          "}
+
+   {:token :tan
+    :impl "
+          highp vec2 compTan(highp vec2 z) {
+            highp vec2 s = compSin(z);
+            highp vec2 c = compCos(z);
+            if (mag(c) == 0.0) {
+              return vec2(0.0, 0.0);
+            }
+            else {
+              return compDiv(s, c);
+            }
+          }
+          "}
+
+   {:token :log
+    :impl "
+          highp vec2 compLog(highp vec2 z) {
+            if (mag(z) == 0.0) {
+              return vec2(0.0, 0.0);
+            }
+            else {
+              return vec2(log(mag(z)), arg(z));
+            }
+          }
+          "}])
+
 (defn- parse [expression]
   (-> expression
       (parser/parse)
@@ -14,8 +156,8 @@
                 :i  "vec2(0.0,1.0)"}
                (into {} (mapv
                           #(vector % (str "comp" (s/capitalize (name %))))
-                          [:re :im :arg :mag :sin :cos :tan :log :negate :add :sub :mul :div :pow])))
-        #(str "vec2(float("(js/parseFloat %)"), 0.0))"))))
+                          (map :token webgl-funcs))))
+        #(str "vec2(float("(js/parseFloat %)"), 0.0)"))))
 
 (defn- ast->glsl [ast]
   (if (string? ast)
@@ -26,6 +168,10 @@
   (str "
    varying highp float x;
    varying highp float y;
+
+   "webgl-utility-funcs"
+
+   "(s/join "\n" (map :impl webgl-funcs))"
 
    highp vec4 hsvToRgb(highp float h, highp float s, highp float v) {
      highp float c = s * v;
@@ -50,108 +196,7 @@
      }
    }
 
-   highp float arg(highp vec2 z) {
-     return atan(z[1], z[0]);
-   }
-
-   highp float mag(highp vec2 z) {
-     return length(z);
-   }
-
-   highp vec2 toCart(highp float a, highp float m) {
-     return vec2(m*cos(a), m*sin(a));
-   }
-
-   highp vec2 compRe(highp vec2 z) {
-     return vec2(z[0], 0.0);
-   }
-
-   highp vec2 compIm(highp vec2 z) {
-     return vec2(z[1], 0.0);
-   }
-
-   highp vec2 compArg(highp vec2 z) {
-     return vec2(arg(z), 0.0);
-   }
-
-   highp vec2 compMag(highp vec2 z) {
-     return vec2(mag(z), 0.0);
-   }
-
-   highp vec2 compAdd(highp vec2 z1, highp vec2 z2) {
-     return vec2(z1[0] + z2[0], z1[1] + z2[1]);
-   }
-
-   highp vec2 compSub(highp vec2 z1, highp vec2 z2) {
-     return vec2(z1[0] - z2[0], z1[1] - z2[1]);
-   }
-
-   highp vec2 compMul(highp vec2 z1, highp vec2 z2) {
-     return toCart(arg(z1)+arg(z2), mag(z1)*mag(z2));
-   }
-
-   highp vec2 compDiv(highp vec2 z1, highp vec2 z2) {
-     if (mag(z2) == 0.0) {
-       return vec2(0.0, 0.0);
-     }
-     else {
-       return toCart(arg(z1)-arg(z2), mag(z1)/mag(z2));
-     }
-   }
-
-   highp vec2 compNegate(highp vec2 z) {
-     return compSub(vec2(0.0, 0.0), z);
-   }
-
-   highp vec2 compPow(highp vec2 z1, highp vec2 z2) {
-     if (mag(z2) == 0.0) {
-       return vec2(0.0, 0.0);
-     }
-     else {
-       highp float a = arg(z1);
-       highp float b = log(mag(z1));
-       highp float c = z2[0];
-       highp float d = z2[1];
-       return toCart(a*c + b*d, exp(b*c - a*d));
-     }
-   }
-
-   highp vec2 compSin(highp vec2 z) {
-     highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
-     return compDiv(compSub(a, compDiv(vec2(1.0,0.0), a)), compMul(vec2(2.0,0.0), vec2(0.0,1.0)));
-   }
-
-   highp vec2 compCos(highp vec2 z) {
-     highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
-     return compDiv(compAdd(a, compDiv(vec2(1.0,0.0), a)), vec2(2.0,0.0));
-   }
-
-   highp vec2 compTan(highp vec2 z) {
-     highp vec2 s = compSin(z);
-     highp vec2 c = compCos(z);
-     if (mag(c) == 0.0) {
-       return vec2(0.0, 0.0);
-     }
-     else {
-       return compDiv(s, c);
-     }
-   }
-
-   highp vec2 compLog(highp vec2 z) {
-     if (mag(z) == 0.0) {
-       return vec2(0.0, 0.0);
-     }
-     else {
-       return vec2(log(mag(z)), arg(z));
-     }
-   }
-
-   highp vec2 compLn(highp vec2 z) {
-     return compLog(z);
-   }
-
-   void main()
-   {
+   void main() {
      highp vec2 z = vec2(
        float("(/ (- right-x left-x) 2)") * x + float("(/ (+ left-x right-x) 2)"),
        float("(/ (- top-y bottom-y) 2)") * y + float("(/ (+ top-y bottom-y) 2)"));
@@ -159,8 +204,8 @@
      highp vec2 f = "(ast->glsl (parse expression))";
 
      highp float modulus = float(" modulus ");
-     highp float h = mod(degrees(arg(f)), 360.0);
-     highp float v = mod(mag(f), modulus) / modulus;
+     highp float h = mod(degrees(atan(f[1], f[0])), 360.0);
+     highp float v = mod(length(f), modulus) / modulus;
      if (mod(mag(f), 2.0*modulus) > modulus) {
        v = 1.0 - v;
      }
