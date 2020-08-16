@@ -84,7 +84,7 @@
    {:token :negate
     :args ["z"]
     :body "
-          return compSub(vec2(0.0, 0.0), z);
+          return {{sub}}(vec2(0.0, 0.0), z);
           "}
 
    {:token :pow
@@ -105,27 +105,27 @@
    {:token :sin
     :args ["z"]
     :body "
-          highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
-          return compDiv(compSub(a, compDiv(vec2(1.0,0.0), a)), compMul(vec2(2.0,0.0), vec2(0.0,1.0)));
+          highp vec2 a = {{pow}}(vec2(exp(1.0),0.0), {{mul}}(vec2(0.0,1.0),z));
+          return {{div}}({{sub}}(a, {{div}}(vec2(1.0,0.0), a)), {{mul}}(vec2(2.0,0.0), vec2(0.0,1.0)));
           "}
 
    {:token :cos
     :args ["z"]
     :body "
-          highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
-          return compDiv(compAdd(a, compDiv(vec2(1.0,0.0), a)), vec2(2.0,0.0));
+          highp vec2 a = {{pow}}(vec2(exp(1.0),0.0), {{mul}}(vec2(0.0,1.0),z));
+          return {{div}}({{add}}(a, {{div}}(vec2(1.0,0.0), a)), vec2(2.0,0.0));
           "}
 
    {:token :tan
     :args ["z"]
     :body "
-          highp vec2 s = compSin(z);
-          highp vec2 c = compCos(z);
+          highp vec2 s = {{sin}}(z);
+          highp vec2 c = {{cos}}(z);
           if (mag(c) == 0.0) {
             return vec2(0.0, 0.0);
           }
           else {
-            return compDiv(s, c);
+            return {{div}}(s, c);
           }
           "}
 
@@ -152,7 +152,7 @@
     "("
     (s/join "," (map #(str "highp vec2 " %) (:args func)))
     ") {"
-    (:body func)
+    (s/replace (:body func) #"\{\{\w*\}\}" #(webgl-func-name (keyword (subs % 2 (- (count %) 2)))))
     "}"))
 
 (defn- ast->str [ast]
