@@ -4,7 +4,7 @@
   :license {:name "GNU General Public License"
             :url "https://www.gnu.org/licenses/gpl-3.0.txt"}
 
-  :min-lein-version "2.8.3"
+  :min-lein-version "2.9.0"
 
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.764"]
