@@ -1,7 +1,6 @@
 (ns complex-grapher.ui.graph
     (:require [reagent.core :as r]
-              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian re im add complex->str evaluate-ast]]
-              [complex-grapher.parser :refer [parse]]
+              [complex-grapher.complex-arithmetic :refer [complex-from-cartesian re im add complex->str evaluate]]
               [complex-grapher.utils :refer [width height pos]]
               [complex-grapher.webgl :as webgl]))
 
@@ -23,8 +22,8 @@
        (complex-from-cartesian (* zoom pos-x) (- (* zoom pos-y)))))
 
 (defn graph [webgl? last-resize graph-state]
-  (let [show-overlay? (r/atom false)
-        mouse-pos     (r/atom nil)]
+  (let [valid-function? (r/atom true)
+        mouse-pos       (r/atom nil)]
     (fn []
       @last-resize ;; Dereference to force render on window size change
 
@@ -32,26 +31,24 @@
         (try
           (let [{:keys [centre zoom function modulus]} @graph-state
                   top-left (top-left-corner centre zoom)
-                  bottom-right (bottom-right-corner centre zoom)
-                  ast (parse function)]
+                  bottom-right (bottom-right-corner centre zoom)]
               (swap! graph-state assoc :top-left-corner top-left)
               (swap! graph-state assoc :bottom-right-corner bottom-right)
               (swap! graph-state assoc :width (width canvas-id))
               (swap! graph-state assoc :height (height canvas-id))
-              (swap! graph-state assoc :ast ast)
               (webgl/draw canvas-id
-                          ast
+                          function
                           modulus
                           (re top-left)
                           (re bottom-right)
                           (im top-left)
                           (im bottom-right)))
-          (reset! show-overlay? false)
-          (catch :default e
-            (reset! show-overlay? true))))
+         (reset! valid-function? true)
+         (catch :default e
+           (reset! valid-function? false))))
 
       [:div
-       [:div {:class "overlay" :style (if @show-overlay? {:opacity 1} {:opacity 0})}
+       [:div {:class "overlay" :style (if-not @valid-function? {:opacity 1} {:opacity 0})}
         [:p {:class "overlaytext"} "Invalid Function"]]
        [:div {:class "graph"}
         [:canvas {:id canvas-id
@@ -61,9 +58,9 @@
                                                       :y (- (.-clientY %) y)}))}]
         [:div {:class "graphlbl"}
          (if-let [{:keys [x y]} @mouse-pos]
-           (let [{:keys [centre zoom ast]} @graph-state
+           (let [{:keys [centre zoom function]} @graph-state
                  z (graphpos->complex centre zoom x y)
-                 fz (if ast (evaluate-ast ast z))]
+                 fz (if @valid-function? (evaluate function z))]
              [:div
               [:p {:class "graphlbl-row"} (str "z = " (complex->str z))]
               (if fz [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))])]))]]])))
