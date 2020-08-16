@@ -94,13 +94,7 @@
         b (div 1 a)]
     (div (sub a b) (mul i (add a b)))))
 
-(defn- _evaluate [transformed-ast z]
-  (cond
-    (= transformed-ast "z")  z
-    (not (seq? transformed-ast)) transformed-ast
-    :else                    (apply
-                               (first transformed-ast)
-                               (map #(_evaluate % z) (rest transformed-ast)))))
+(defn- _evaluate [transformed-ast z])
 
 (def ^:private token-map
   {:re     re
@@ -122,13 +116,18 @@
    :div    div
    :pow    pow})
 
-(defn evaluate-ast [ast z]
-  (_evaluate
+(defn- evaluate-ast [ast z]
+  (cond
+    (= ast "z")      z
+    (not (seq? ast)) ast
+    :else            (apply
+                       (first ast)
+                       (map #(evaluate-ast % z) (rest ast)))))
+
+(defn evaluate [expression z]
+  (evaluate-ast
     (parser/transform-ast
-      ast
+      (parser/parse expression)
       token-map
       js/parseFloat)
     z))
-
-(defn evaluate [expression z]
-  (evaluate-ast (parser/parse expression) z))
