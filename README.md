@@ -1,5 +1,7 @@
 # The Complex Grapher
 
+<img src="/graph.png" width="350" alt="The function f(z) = (0.7955arg(z)+mag(z))e^(i*mag(z))" title="f(z) = (0.7955arg(z)+mag(z))*e^(i*mag(z))">
+
 An online tool for creating graphs of functions on the [complex
 plane](https://en.wikipedia.org/wiki/Complex_plane).
 
