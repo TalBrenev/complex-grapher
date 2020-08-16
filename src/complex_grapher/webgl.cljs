@@ -4,6 +4,8 @@
             [complex-grapher.complex-arithmetic :refer [re im]]
             [complex-grapher.utils :refer [set-attr width height]]))
 
+;;------------------------------------------------------------------------------;;
+
 (def ^:private webgl-utility-funcs
   "
   highp float arg(highp vec2 z) {
@@ -19,159 +21,164 @@
   }
   ")
 
+(def ^:private webgl-consts
+  {:z  "z"
+   :e  "vec2(exp(1.0),0.0)"
+   :pi "vec2(radians(180.0),0.0)"
+   :i  "vec2(0.0,1.0)"})
+
 (def ^:private webgl-funcs
   [{:token :re
-    :impl "
-          highp vec2 compRe(highp vec2 z) {
-             return vec2(z[0], 0.0);
-          }
+    :args ["z"]
+    :body "
+          return vec2(z[0], 0.0);
           "}
 
    {:token :im
-    :impl "
-          highp vec2 compIm(highp vec2 z) {
-            return vec2(z[1], 0.0);
-          }
+    :args ["z"]
+    :body "
+          return vec2(z[1], 0.0);
           "}
 
    {:token :arg
-    :impl "
-          highp vec2 compArg(highp vec2 z) {
-            return vec2(arg(z), 0.0);
-          }
+    :args ["z"]
+    :body "
+          return vec2(arg(z), 0.0);
           "}
 
    {:token :mag
-    :impl "
-          highp vec2 compMag(highp vec2 z) {
-            return vec2(mag(z), 0.0);
-          }
+    :args ["z"]
+    :body "
+          return vec2(mag(z), 0.0);
           "}
 
    {:token :add
-    :impl "
-          highp vec2 compAdd(highp vec2 z1, highp vec2 z2) {
-            return vec2(z1[0] + z2[0], z1[1] + z2[1]);
-          }
+    :args ["z1", "z2"]
+    :body "
+          return vec2(z1[0] + z2[0], z1[1] + z2[1]);
           "}
 
    {:token :sub
-    :impl "
-          highp vec2 compSub(highp vec2 z1, highp vec2 z2) {
-            return vec2(z1[0] - z2[0], z1[1] - z2[1]);
-          }
+    :args ["z1", "z2"]
+    :body "
+          return vec2(z1[0] - z2[0], z1[1] - z2[1]);
           "}
 
    {:token :mul
-    :impl "
-          highp vec2 compMul(highp vec2 z1, highp vec2 z2) {
-            return toCart(arg(z1)+arg(z2), mag(z1)*mag(z2));
-          }
+    :args ["z1", "z2"]
+    :body "
+          return toCart(arg(z1)+arg(z2), mag(z1)*mag(z2));
           "}
 
    {:token :div
-    :impl "
-          highp vec2 compDiv(highp vec2 z1, highp vec2 z2) {
-            if (mag(z2) == 0.0) {
-              return vec2(0.0, 0.0);
-            }
-            else {
-              return toCart(arg(z1)-arg(z2), mag(z1)/mag(z2));
-            }
+    :args ["z1", "z2"]
+    :body "
+          if (mag(z2) == 0.0) {
+            return vec2(0.0, 0.0);
+          }
+          else {
+            return toCart(arg(z1)-arg(z2), mag(z1)/mag(z2));
           }
           "}
 
    {:token :negate
-    :impl "
-          highp vec2 compNegate(highp vec2 z) {
-            return compSub(vec2(0.0, 0.0), z);
-          }
+    :args ["z"]
+    :body "
+          return compSub(vec2(0.0, 0.0), z);
           "}
 
    {:token :pow
-    :impl "
-          highp vec2 compPow(highp vec2 z1, highp vec2 z2) {
-            if (mag(z2) == 0.0) {
-              return vec2(0.0, 0.0);
-            }
-            else {
-              highp float a = arg(z1);
-              highp float b = log(mag(z1));
-              highp float c = z2[0];
-              highp float d = z2[1];
-              return toCart(a*c + b*d, exp(b*c - a*d));
-            }
+    :args ["z1", "z2"]
+    :body "
+          if (mag(z2) == 0.0) {
+            return vec2(0.0, 0.0);
+          }
+          else {
+            highp float a = arg(z1);
+            highp float b = log(mag(z1));
+            highp float c = z2[0];
+            highp float d = z2[1];
+            return toCart(a*c + b*d, exp(b*c - a*d));
           }
           "}
 
    {:token :sin
-    :impl "
-          highp vec2 compSin(highp vec2 z) {
-            highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
-            return compDiv(compSub(a, compDiv(vec2(1.0,0.0), a)), compMul(vec2(2.0,0.0), vec2(0.0,1.0)));
-          }
+    :args ["z"]
+    :body "
+          highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
+          return compDiv(compSub(a, compDiv(vec2(1.0,0.0), a)), compMul(vec2(2.0,0.0), vec2(0.0,1.0)));
           "}
 
    {:token :cos
-    :impl "
-          highp vec2 compCos(highp vec2 z) {
-            highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
-            return compDiv(compAdd(a, compDiv(vec2(1.0,0.0), a)), vec2(2.0,0.0));
-          }
+    :args ["z"]
+    :body "
+          highp vec2 a = compPow(vec2(exp(1.0),0.0), compMul(vec2(0.0,1.0),z));
+          return compDiv(compAdd(a, compDiv(vec2(1.0,0.0), a)), vec2(2.0,0.0));
           "}
 
    {:token :tan
-    :impl "
-          highp vec2 compTan(highp vec2 z) {
-            highp vec2 s = compSin(z);
-            highp vec2 c = compCos(z);
-            if (mag(c) == 0.0) {
-              return vec2(0.0, 0.0);
-            }
-            else {
-              return compDiv(s, c);
-            }
+    :args ["z"]
+    :body "
+          highp vec2 s = compSin(z);
+          highp vec2 c = compCos(z);
+          if (mag(c) == 0.0) {
+            return vec2(0.0, 0.0);
+          }
+          else {
+            return compDiv(s, c);
           }
           "}
 
    {:token :log
-    :impl "
-          highp vec2 compLog(highp vec2 z) {
-            if (mag(z) == 0.0) {
-              return vec2(0.0, 0.0);
-            }
-            else {
-              return vec2(log(mag(z)), arg(z));
-            }
+    :args ["z"]
+    :body "
+          if (mag(z) == 0.0) {
+            return vec2(0.0, 0.0);
+          }
+          else {
+            return vec2(log(mag(z)), arg(z));
           }
           "}])
 
-(defn- parse [expression]
-  (-> expression
-      (parser/parse)
-      (parser/transform-ast
-        (merge {:z  "z"
-                :e  "vec2(exp(1.0),0.0)"
-                :pi "vec2(radians(180.0),0.0)"
-                :i  "vec2(0.0,1.0)"}
-               (into {} (mapv
-                          #(vector % (str "comp" (s/capitalize (name %))))
-                          (map :token webgl-funcs))))
-        #(str "vec2(float("(js/parseFloat %)"), 0.0)"))))
+;;------------------------------------------------------------------------------;;
 
-(defn- ast->glsl [ast]
+(defn- webgl-func-name [token]
+  (str "comp" (s/capitalize (name token))))
+
+(defn- generate-webgl-func [func]
+  (str
+    "highp vec2 "
+    (webgl-func-name (:token func))
+    "("
+    (s/join "," (map #(str "highp vec2 " %) (:args func)))
+    ") {"
+    (:body func)
+    "}"))
+
+(defn- ast->str [ast]
   (if (string? ast)
     ast
-    (str (first ast) "(" (s/join "," (map ast->glsl (rest ast))) ")")))
+    (str (first ast) "(" (s/join "," (map ast->str (rest ast))) ")")))
 
-(defn- fs-src [expression modulus left-x right-x top-y bottom-y]
+(defn- translate-to-glsl [function]
+  (-> function
+      (parser/parse)
+      (parser/transform-ast
+        (merge webgl-consts
+               (into {} (mapv
+                          #(vector % (webgl-func-name %))
+                          (map :token webgl-funcs))))
+        #(str "vec2(float("(js/parseFloat %)"), 0.0)"))
+      (ast->str)))
+
+(defn- fs-src [function modulus left-x right-x top-y bottom-y]
   (str "
    varying highp float x;
    varying highp float y;
 
    "webgl-utility-funcs"
 
-   "(s/join "\n" (map :impl webgl-funcs))"
+   "(s/join "\n" (map generate-webgl-func webgl-funcs))"
 
    highp vec4 hsvToRgb(highp float h, highp float s, highp float v) {
      highp float c = s * v;
@@ -201,7 +208,7 @@
        float("(/ (- right-x left-x) 2)") * x + float("(/ (+ left-x right-x) 2)"),
        float("(/ (- top-y bottom-y) 2)") * y + float("(/ (+ top-y bottom-y) 2)"));
 
-     highp vec2 f = "(ast->glsl (parse expression))";
+     highp vec2 f = "(translate-to-glsl function)";
 
      highp float modulus = float(" modulus ");
      highp float h = mod(degrees(atan(f[1], f[0])), 360.0);
@@ -247,11 +254,11 @@
     (.bufferData gl (.-ARRAY_BUFFER gl) (js/Float32Array. #js [-1 1 1 1 -1 -1 1 -1]) (.-STATIC_DRAW gl))
     buffer))
 
-(defn draw [canvas-id expression modulus left-x right-x top-y bottom-y]
+(defn draw [canvas-id function modulus left-x right-x top-y bottom-y]
   (set-attr canvas-id "width" (width canvas-id))
   (set-attr canvas-id "height" (height canvas-id))
   (let [gl (create-context canvas-id)
-        program (create-shader-program gl vs-src (fs-src expression modulus left-x right-x top-y bottom-y))
+        program (create-shader-program gl vs-src (fs-src function modulus left-x right-x top-y bottom-y))
         buffer (create-buffer gl)]
     (.viewport gl 0 0 (width canvas-id) (height canvas-id))
     (.clear gl (.-COLOR_BUFFER_BIT gl))
