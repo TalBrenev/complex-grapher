@@ -23,7 +23,8 @@
 
 (defn graph [webgl? last-resize graph-state]
   (let [valid-function? (r/atom true)
-        mouse-pos       (r/atom nil)]
+        mouse-pos       (r/atom nil)
+        mouse-dragging? (r/atom false)]
     (fn []
       @last-resize ;; Dereference to force render on window size change
 
@@ -52,10 +53,23 @@
         [:p {:class "overlaytext"} "Invalid Function"]]
        [:div {:class "graph"}
         [:canvas {:id canvas-id
-                  :onMouseLeave #(reset! mouse-pos nil)
-                  :onMouseMove  #(reset! mouse-pos (let [{:keys [x y]} (pos canvas-id)]
-                                                     {:x (- (.-clientX %) x)
-                                                      :y (- (.-clientY %) y)}))}]
+                  :onMouseLeave #(do
+                                   (reset! mouse-pos nil)
+                                   (reset! mouse-dragging? false))
+                  :onMouseDown  #(reset! mouse-dragging? true)
+                  :onMouseUp    #(reset! mouse-dragging? false)
+                  :onMouseMove  #(if @mouse-dragging?
+                                   (do
+                                     (reset! mouse-pos nil)
+                                     (let [change-x (.-movementX %)
+                                           change-y (.-movementY %)
+                                           {:keys [centre zoom]} @graph-state]
+                                       (swap! graph-state assoc :centre (add centre (complex-from-cartesian
+                                                                                      (- (* zoom change-x))
+                                                                                      (* zoom change-y))))))
+                                   (reset! mouse-pos (let [{:keys [x y]} (pos canvas-id)]
+                                                       {:x (- (.-clientX %) x)
+                                                        :y (- (.-clientY %) y)})))}]
         [:div {:class "graphlbl"}
          (if-let [{:keys [x y]} @mouse-pos]
            (let [{:keys [centre zoom function]} @graph-state
