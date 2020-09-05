@@ -78,12 +78,15 @@
                                                                        graph-state
                                                                        (- (:x drag-start-pos) (:x pos))
                                                                        (- (:y drag-start-pos) (:y pos)))))
-                        (swap! mouse-state assoc :drag-start-pos pos))))]
+                        (swap! mouse-state assoc :drag-start-pos pos))))
+                  (change-zoom [amount]
+                    (swap! graph-state assoc :zoom (* zoom (Math/pow Math/E amount))))]
             [:canvas {:id canvas-id
                       :onMouseLeave mouse-leave
                       :onMouseMove  #(mouse-move (mouse-pos %))
                       :onMouseDown  #(drag-start (mouse-pos %))
                       :onMouseUp    drag-end
+                      :onWheel      #(change-zoom (/ (.-deltaY %) 800))
                       :onTouchStart #(if (= (.-length (.-touches %)) 1)
                                        (-> % (.-touches) (first) (mouse-pos) (drag-start))
                                        (drag-end))
