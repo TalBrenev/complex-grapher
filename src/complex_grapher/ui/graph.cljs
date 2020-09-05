@@ -87,7 +87,7 @@
                       :onTouchStart #(if (= (.-length (.-touches %)) 1)
                                        (-> % (.-touches) (first) (mouse-pos) (drag-start))
                                        (drag-end))
-                      :onTouchEnd   drag-end
+                      :onTouchEnd   mouse-leave
                       :onTouchMove  #(-> % (.-touches) (first) (mouse-pos) (mouse-move))}]))
         [:div {:class "graphlbl"}
          (if-let [{{:keys [x y]} :pos dragging? :drag-start-pos} @mouse-state]
