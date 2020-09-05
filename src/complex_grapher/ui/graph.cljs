@@ -4,77 +4,97 @@
               [complex-grapher.utils :refer [width height pos]]
               [complex-grapher.webgl :as webgl]))
 
-(defonce canvas-id "canvas")
+(defonce ^:private canvas-id "canvas")
 
-(defn top-left-corner [centre zoom]
-  "Computes the complex number represented by the top-left corner of the graph."
-  (add centre (complex-from-cartesian (- (* 0.5 zoom (width canvas-id)))
-                                      (* 0.5 zoom (height canvas-id)))))
+(defn mouse-pos [event]
+  "Gets the position of the mouse on the canvas based on the `clientX` and `clientY` properties of the given event.
+  Returns a map with keys `:x` and `:y`."
+  (let [{canvas-x :x canvas-y :y} (pos canvas-id)]
+   {:x (- (.-clientX event) canvas-x)
+    :y (- (.-clientY event) canvas-y)}))
 
-(defn bottom-right-corner [centre zoom]
-  "Computes the complex number represented by the bottom-right corner of the graph."
-  (add centre (complex-from-cartesian (* 0.5 zoom (width canvas-id))
-                                      (- (* 0.5 zoom (height canvas-id))))))
+(defn graphpix->complex [graph-state x y]
+  "Given `x` and `y`, which represent the real and imaginary parts of a complex number in graph pixels,
+  computes the actual complex number which they represent."
+  (let [{:keys [zoom]} @graph-state]
+    (complex-from-cartesian (* zoom x) (- (* zoom y)))))
 
-(defn graphpos->complex [centre zoom pos-x pos-y]
+(defn graphpos->complex [graph-state pos-x pos-y]
   "Computes the complex number represented by a position on the graph."
-  (add (top-left-corner centre zoom)
-       (complex-from-cartesian (* zoom pos-x) (- (* zoom pos-y)))))
+  (let [{:keys [top-left-corner]} @graph-state]
+    (add top-left-corner (graphpix->complex graph-state pos-x pos-y))))
+
+(defn compute-graph-info [graph-state]
+  "Computes info about the graph (width/height, corner numbers) and stores it in the graph state."
+  (let [{:keys [centre zoom]} @graph-state]
+    (swap! graph-state assoc :width (width canvas-id))
+    (swap! graph-state assoc :height (height canvas-id))
+    (swap! graph-state assoc :top-left-corner
+           (add centre (complex-from-cartesian (- (* 0.5 zoom (width canvas-id)))
+                                               (* 0.5 zoom (height canvas-id)))))
+    (swap! graph-state assoc :bottom-right-corner
+           (add centre (complex-from-cartesian (* 0.5 zoom (width canvas-id))
+                                               (- (* 0.5 zoom (height canvas-id))))))))
+
+(defn draw-graph [graph-state]
+  "Tries graphing the complex function. Throws an exception in case of invalid input."
+  (let [{:keys [function modulus top-left-corner bottom-right-corner]} @graph-state]
+    (webgl/draw canvas-id
+                function
+                modulus
+                (re top-left-corner)
+                (re bottom-right-corner)
+                (im top-left-corner)
+                (im bottom-right-corner))))
 
 (defn graph [webgl? last-resize graph-state]
   (let [valid-function? (r/atom true)
-        mouse-pos       (r/atom nil)
-        mouse-dragging? (r/atom false)]
+        mouse-state     (r/atom nil)]
     (fn []
-      @last-resize ;; Dereference to force render on window size change
-
+      @last-resize ;; Dereference to force re-render on window size change
       (when @webgl?
+        (compute-graph-info graph-state)
         (try
-          (let [{:keys [centre zoom function modulus]} @graph-state
-                  top-left (top-left-corner centre zoom)
-                  bottom-right (bottom-right-corner centre zoom)]
-              (swap! graph-state assoc :top-left-corner top-left)
-              (swap! graph-state assoc :bottom-right-corner bottom-right)
-              (swap! graph-state assoc :width (width canvas-id))
-              (swap! graph-state assoc :height (height canvas-id))
-              (webgl/draw canvas-id
-                          function
-                          modulus
-                          (re top-left)
-                          (re bottom-right)
-                          (im top-left)
-                          (im bottom-right)))
-         (reset! valid-function? true)
-         (catch :default e
-           (reset! valid-function? false))))
-
+          (draw-graph graph-state)
+          (reset! valid-function? true)
+          (catch :default e
+            (reset! valid-function? false))))
       [:div
-       [:div {:class "overlay" :style (if-not @valid-function? {:opacity 1} {:opacity 0})}
+       [:div {:class "overlay" :style {:opacity (if @valid-function? 0 1)}}
         [:p {:class "overlaytext"} "Invalid Function"]]
        [:div {:class "graph"}
-        [:canvas {:id canvas-id
-                  :onMouseLeave #(do
-                                   (reset! mouse-pos nil)
-                                   (reset! mouse-dragging? false))
-                  :onMouseDown  #(reset! mouse-dragging? true)
-                  :onMouseUp    #(reset! mouse-dragging? false)
-                  :onMouseMove  #(if @mouse-dragging?
-                                   (do
-                                     (reset! mouse-pos nil)
-                                     (let [change-x (.-movementX %)
-                                           change-y (.-movementY %)
-                                           {:keys [centre zoom]} @graph-state]
-                                       (swap! graph-state assoc :centre (add centre (complex-from-cartesian
-                                                                                      (- (* zoom change-x))
-                                                                                      (* zoom change-y))))))
-                                   (reset! mouse-pos (let [{:keys [x y]} (pos canvas-id)]
-                                                       {:x (- (.-clientX %) x)
-                                                        :y (- (.-clientY %) y)})))}]
+        (let [{:keys [centre zoom]} @graph-state]
+          (letfn [(mouse-leave []
+                    (reset! mouse-state nil))
+                  (drag-start [pos]
+                    (swap! mouse-state assoc :drag-start-pos pos))
+                  (drag-end []
+                    (swap! mouse-state dissoc :drag-start-pos))
+                  (mouse-move [pos]
+                    (swap! mouse-state assoc :pos pos)
+                    (let [{:keys [drag-start-pos]} @mouse-state]
+                      (when drag-start-pos
+                        (swap! graph-state assoc :centre (add centre (graphpix->complex
+                                                                       graph-state
+                                                                       (- (:x drag-start-pos) (:x pos))
+                                                                       (- (:y drag-start-pos) (:y pos)))))
+                        (swap! mouse-state assoc :drag-start-pos pos))))]
+            [:canvas {:id canvas-id
+                      :onMouseLeave mouse-leave
+                      :onMouseMove  #(mouse-move (mouse-pos %))
+                      :onMouseDown  #(drag-start (mouse-pos %))
+                      :onMouseUp    drag-end
+                      :onTouchStart #(if (= (.-length (.-touches %)) 1)
+                                       (-> % (.-touches) (first) (mouse-pos) (drag-start))
+                                       (drag-end))
+                      :onTouchEnd   drag-end
+                      :onTouchMove  #(-> % (.-touches) (first) (mouse-pos) (mouse-move))}]))
         [:div {:class "graphlbl"}
-         (if-let [{:keys [x y]} @mouse-pos]
-           (let [{:keys [centre zoom function]} @graph-state
-                 z (graphpos->complex centre zoom x y)
-                 fz (if @valid-function? (evaluate function z))]
-             [:div
-              [:p {:class "graphlbl-row"} (str "z = " (complex->str z))]
-              (if fz [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))])]))]]])))
+         (if-let [{{:keys [x y]} :pos dragging? :drag-start-pos} @mouse-state]
+           (when (and @valid-function? (not dragging?))
+             (let [{:keys [centre zoom function]} @graph-state
+                   z (graphpos->complex graph-state x y)
+                   fz (evaluate function z)]
+               [:div
+                [:p {:class "graphlbl-row"} (str "z = " (complex->str z))]
+                [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))]])))]]])))
