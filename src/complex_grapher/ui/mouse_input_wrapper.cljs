@@ -17,6 +17,7 @@
     (fn []
       [:div {:style        {:width "100%" :height "100%"}
              :onMouseEnter (fn [event]
+                             (.addEventListener (.-target event) "wheel" #(.preventDefault %))
                              (reset! pos (mouse-pos event))
                              (when mouse-enter (mouse-enter @pos)))
              :onMouseLeave (fn [event]
