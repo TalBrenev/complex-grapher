@@ -20,15 +20,15 @@
 
 (defn- compute-graph-info [graph-state]
   "Computes info about the graph (width/height, corner numbers) and stores it in the graph state."
-  (let [{:keys [centre zoom]} @graph-state]
-    (swap! graph-state assoc :width (width canvas-id))
-    (swap! graph-state assoc :height (height canvas-id))
-    (swap! graph-state assoc :top-left-corner
-           (add centre (complex-from-cartesian (- (* 0.5 zoom (width canvas-id)))
-                                               (* 0.5 zoom (height canvas-id)))))
-    (swap! graph-state assoc :bottom-right-corner
-           (add centre (complex-from-cartesian (* 0.5 zoom (width canvas-id))
-                                               (- (* 0.5 zoom (height canvas-id))))))))
+  (let [{:keys [centre zoom]} @graph-state
+        width (width canvas-id)
+        height (height canvas-id)]
+    (swap! graph-state merge {:width               width
+                              :height              height
+                              :top-left-corner     (add centre (complex-from-cartesian (- (* 0.5 zoom width))
+                                                                                       (* 0.5 zoom height)))
+                              :bottom-right-corner (add centre (complex-from-cartesian (* 0.5 zoom width)
+                                                                                       (- (* 0.5 zoom height))))})))
 
 (defn- draw-graph [graph-state]
   "Tries graphing the complex function. Throws an exception in case of invalid input."
