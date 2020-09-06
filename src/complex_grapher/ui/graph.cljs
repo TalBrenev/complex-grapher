@@ -7,18 +7,18 @@
 
 (defonce ^:private canvas-id "canvas")
 
-(defn graphpix->complex [graph-state x y]
+(defn- graphpix->complex [graph-state x y]
   "Given `x` and `y`, which represent the real and imaginary parts of a complex number in graph pixels,
   computes the actual complex number which they represent."
   (let [{:keys [zoom]} @graph-state]
     (complex-from-cartesian (* zoom x) (- (* zoom y)))))
 
-(defn graphpos->complex [graph-state pos-x pos-y]
+(defn- graphpos->complex [graph-state pos-x pos-y]
   "Computes the complex number represented by a position on the graph."
   (let [{:keys [top-left-corner]} @graph-state]
     (add top-left-corner (graphpix->complex graph-state pos-x pos-y))))
 
-(defn compute-graph-info [graph-state]
+(defn- compute-graph-info [graph-state]
   "Computes info about the graph (width/height, corner numbers) and stores it in the graph state."
   (let [{:keys [centre zoom]} @graph-state]
     (swap! graph-state assoc :width (width canvas-id))
@@ -30,7 +30,7 @@
            (add centre (complex-from-cartesian (* 0.5 zoom (width canvas-id))
                                                (- (* 0.5 zoom (height canvas-id))))))))
 
-(defn draw-graph [graph-state]
+(defn- draw-graph [graph-state]
   "Tries graphing the complex function. Throws an exception in case of invalid input."
   (let [{:keys [function modulus top-left-corner bottom-right-corner]} @graph-state]
     (webgl/draw canvas-id
