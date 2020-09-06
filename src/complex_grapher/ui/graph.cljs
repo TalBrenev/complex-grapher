@@ -7,16 +7,14 @@
 
 (defonce ^:private canvas-id "canvas")
 
-(defn- graphpix->complex [graph-state x y]
+(defn- graphpix->complex [zoom x y]
   "Given `x` and `y`, which represent the real and imaginary parts of a complex number in graph pixels,
   computes the actual complex number which they represent."
-  (let [{:keys [zoom]} @graph-state]
-    (complex-from-cartesian (* zoom x) (- (* zoom y)))))
+  (complex-from-cartesian (* zoom x) (- (* zoom y))))
 
-(defn- graphpos->complex [graph-state pos-x pos-y]
+(defn- graphpos->complex [top-left-corner zoom x y]
   "Computes the complex number represented by a position on the graph."
-  (let [{:keys [top-left-corner]} @graph-state]
-    (add top-left-corner (graphpix->complex graph-state pos-x pos-y))))
+  (add top-left-corner (graphpix->complex zoom x y)))
 
 (defn- compute-graph-info [graph-state]
   "Computes info about the graph (width/height, corner numbers) and stores it in the graph state."
@@ -46,6 +44,7 @@
         mouse-pos       (r/atom nil)]
     (fn []
       @last-resize ;; Dereference to force re-render on window size change
+
       (when @webgl?
         (compute-graph-info graph-state)
         (try
@@ -53,28 +52,31 @@
           (reset! valid-function? true)
           (catch :default e
             (reset! valid-function? false))))
-      [:div
-       [:div {:class "overlay" :style {:opacity (if @valid-function? 0 1)}}
-        [:p {:class "overlaytext"} "Invalid Function"]]
-       [:div {:class "graph"}
-         [mouse-input-wrapper
-           {:mouse-leave #(reset! mouse-pos nil)
-            :mouse-move  #(reset! mouse-pos %)
-            :zoom        (fn [amount]
-                           (swap! graph-state update :zoom
-                                  #(* % (Math/pow Math/E (/ amount 800)))))
-            :drag        (fn [start end]
-                           (swap! graph-state update :centre
-                                  #(add % (graphpix->complex
-                                             graph-state
-                                             (- (:x start) (:x end))
-                                             (- (:y start) (:y end))))))}
-           [:canvas {:id canvas-id}]]
-         [:div {:class "graphlbl"}
-          (if-let [{:keys [x y]} @mouse-pos]
-            (when @valid-function?
-              (let [z (graphpos->complex graph-state x y)
-                    fz (evaluate (:function @graph-state) z)]
-                [:div
-                 [:p {:class "graphlbl-row"} (str "z = " (complex->str z))]
-                 [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))]])))]]])))
+
+      (let [{:keys [function top-left-corner zoom]} @graph-state]
+        [:div
+         [:div {:class "overlay" :style {:opacity (if @valid-function? 0 1)}}
+          [:p {:class "overlaytext"} "Invalid Function"]]
+         [:div {:class "graph"}
+           [mouse-input-wrapper
+             {:mouse-leave #(reset! mouse-pos nil)
+              :mouse-move  #(reset! mouse-pos %)
+              :zoom        (fn [amount]
+                             (swap! graph-state update :zoom
+                                    #(* % (Math/pow Math/E (/ amount 800)))))
+              :drag        (fn [start end]
+                             (swap! graph-state
+                                    #(assoc % :centre (add (:centre %)
+                                                           (graphpix->complex
+                                                              (:zoom %)
+                                                              (- (:x start) (:x end))
+                                                              (- (:y start) (:y end)))))))}
+             [:canvas {:id canvas-id}]]
+           [:div {:class "graphlbl"}
+            (if-let [{:keys [x y]} @mouse-pos]
+              (when @valid-function?
+                (let [z (graphpos->complex top-left-corner zoom x y)
+                      fz (evaluate function z)]
+                  [:div
+                   [:p {:class "graphlbl-row"} (str "z = " (complex->str z))]
+                   [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))]])))]]]))))
