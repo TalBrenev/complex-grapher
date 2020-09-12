@@ -1,4 +1,4 @@
-(ns complex-grapher.core
+(ns complex-grapher.ui.main
     (:require [reagent.core :as r]
               [reagent.dom :as d]
               [cljsjs.smooth-scroll]
