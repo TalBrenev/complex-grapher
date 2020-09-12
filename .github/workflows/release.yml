@@ -18,6 +18,11 @@ jobs:
       with:
         entrypoint: ./.github/test/run.sh
 
+    - name: scss
+      uses: ./.github/scss
+      with:
+        entrypoint: ./.github/scss/run.sh
+
     - name: build
       uses: ./.github/build
       with:
