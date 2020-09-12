@@ -25,6 +25,7 @@
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                   :init (do (require 'figwheel.main.api) (future (figwheel.main.api/start "dev")))}
                    :clean-targets ^{:protect false} ["resources/public/cljs-out"
-                                                     "resources/public/js"
+                                                     "resources/public/*.js"
+                                                     "resources/public/style.min.css"
                                                      "cljs-test-runner-out"
                                                      :target-path]}})

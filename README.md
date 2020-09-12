@@ -16,10 +16,14 @@ The Complex Grapher lives [here](https://talbrenev.com/complexgrapher).
 
 ## Development
 
-You'll need [Leiningen](https://github.com/technomancy/leiningen) version 2.9.0 or later.
+You'll need:
+- [Leiningen](https://github.com/technomancy/leiningen) version 2.9.0 or later.
+- [node-sass](https://www.npmjs.com/package/node-sass) (or equivalent; you just need to be able to run `sass` from your command line)
 
 In the project root, `lein repl` will run the dev environment at
 `localhost:9500` and give you a ClojureScript repl. It will also run tests
 automatically; you can see the results at
 `localhost:9500/figwheel-extra-main/auto-testing`. If you want to run tests
 from the command line, you can use `lein test`.
+
+For SCSS compilation, run `./scss.sh`.

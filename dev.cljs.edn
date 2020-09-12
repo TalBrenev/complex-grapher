@@ -1,5 +1,5 @@
 ^{:watch-dirs ["test" "src"]
-  :css-dirs ["resources/public/css"]
+  :css-dirs ["resources/public"]
   :auto-testing true}
 {:main complex-grapher.core
- :output-to "resources/public/js/main.js"}
+ :output-to "resources/public/main.min.js"}
