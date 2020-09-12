@@ -1,0 +1,59 @@
+.graph {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    touch-action: none;
+
+    &:hover {
+        cursor: crosshair;
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        background-color: $overlay-background;
+        -webkit-transition: opacity 0.5s;
+        transition: opacity 0.5s;
+        pointer-events: none;
+
+        p {
+            font-size: font-size("heading");
+            color: $off-white;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: font-weight("bold");
+        }
+    }
+
+    .mouse-position
+    {
+        position: absolute;
+        right: space(5);
+        bottom: space(5);
+        font-size: font-size("text");
+        color: $white;
+        margin: 0;
+        line-height: font-size("text");
+        text-shadow: -1px -1px 1px black, 1px -1px 1px black, -1px 1px 1px black, 1px 1px 1px black;
+        pointer-events: none;
+        user-select: none;
+
+        p
+        {
+            margin: space(3) 0;
+            text-align: right;
+        }
+    }
+}

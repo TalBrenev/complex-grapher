@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
+
+html {
+    font-family: "Roboto", sans-serif;
+}
+
+$font-sizes: (
+    "text":       1rem,
+    "heading":    3rem,
+    "subheading": 1.5rem
+);
+
+@function font-size($x) {
+    @return map-get($font-sizes, $x);
+}
+
+$font-weights: (
+    "regular": 400,
+    "bold": 700
+);
+
+@function font-weight($x) {
+    @return map-get($font-weights, $x);
+}

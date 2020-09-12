@@ -1,0 +1,24 @@
+$xl: 1920px;
+$lg: 1280px;
+$sm: 420px;
+$xs: 280px;
+
+html {
+    font-size: 24px;
+
+    @media (max-width: $xl) {
+        font-size: 22px;
+    }
+
+    @media (max-width: $lg) {
+        font-size: 20px;
+    }
+
+    @media (max-width: $sm) {
+        font-size: 18px;
+    }
+
+    @media (max-width: $xs) {
+        font-size: 5vw;
+    }
+}

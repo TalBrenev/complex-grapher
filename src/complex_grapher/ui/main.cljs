@@ -24,18 +24,11 @@
 (defonce app-state (r/atom initial-state))
 
 (defn app []
-  [:div
+  [:div {:id "main"}
    [no-webgl (r/cursor app-state [:webgl?])]
-   [:div {:class "wrapper"}
-    [:h1 {:class "title"} "The Complex Grapher"]
-    [:div {:class "main"}
-     [graph (r/cursor app-state [:webgl?])
-            (r/cursor app-state [:last-resize])
-            (r/cursor app-state [:graph])]
-     [controls (r/cursor app-state [:graph])
-               (:graph initial-state)]]
-    [:p {:class "footnote"} "Created by " [:a {:href "https://www.talbrenev.com/"} "Tal Brenev"]]
-    [about]]])
+   [graph (r/cursor app-state [:webgl?])
+          (r/cursor app-state [:last-resize])
+          (r/cursor app-state [:graph])]])
 
 (defn setup-smooth-scroll []
   (.init js/smoothScroll #js {:speed 850}))

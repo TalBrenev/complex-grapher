@@ -54,29 +54,27 @@
             (reset! valid-function? false))))
 
       (let [{:keys [function top-left-corner zoom]} @graph-state]
-        [:div
-         [:div {:class "overlay" :style {:opacity (if @valid-function? 0 1)}}
-          [:p {:class "overlaytext"} "Invalid Function"]]
-         [:div {:class "graph"}
-           [mouse-input-wrapper
-             {:mouse-leave #(reset! mouse-pos nil)
-              :mouse-move  #(reset! mouse-pos %)
-              :zoom        (fn [amount]
-                             (swap! graph-state update :zoom
-                                    #(* % (Math/pow Math/E (/ amount 800)))))
-              :drag        (fn [start end]
-                             (swap! graph-state
-                                    #(assoc % :centre (add (:centre %)
-                                                           (graphpix->complex
-                                                              (:zoom %)
-                                                              (- (:x start) (:x end))
-                                                              (- (:y start) (:y end)))))))}
-             [:canvas {:id canvas-id}]]
-           [:div {:class "graphlbl"}
-            (if-let [{:keys [x y]} @mouse-pos]
-              (when @valid-function?
-                (let [z (graphpos->complex top-left-corner zoom x y)
-                      fz (evaluate function z)]
-                  [:div
-                   [:p {:class "graphlbl-row"} (str "z = " (complex->str z))]
-                   [:p {:class "graphlbl-row"} (str "f(z) = " (complex->str fz))]])))]]]))))
+        [:div {:class "graph"}
+          [:div {:class "overlay" :style {:opacity (if @valid-function? 0 1)}}
+            [:p "Invalid Function"]]
+          [mouse-input-wrapper
+            {:mouse-leave #(reset! mouse-pos nil)
+             :mouse-move  #(reset! mouse-pos %)
+             :zoom        (fn [amount]
+                            (swap! graph-state update :zoom
+                                   #(* % (Math/pow Math/E (/ amount 800)))))
+             :drag        (fn [start end]
+                            (swap! graph-state
+                                   #(assoc % :centre (add (:centre %)
+                                                          (graphpix->complex
+                                                             (:zoom %)
+                                                             (- (:x start) (:x end))
+                                                             (- (:y start) (:y end)))))))}
+            [:canvas {:id canvas-id}]]
+          (if-let [{:keys [x y]} @mouse-pos]
+            (when @valid-function?
+              (let [z (graphpos->complex top-left-corner zoom x y)
+                    fz (evaluate function z)]
+                [:div {:class "mouse-position"}
+                 [:p (str "z = " (complex->str z))]
+                 [:p (str "f(z) = " (complex->str fz))]])))]))))
