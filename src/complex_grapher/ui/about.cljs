@@ -9,7 +9,7 @@
      [:p "The Complex Grapher creates visualizations of complex functions
          (i.e. functions of a complex variable). If you are unfamiliar with
          complex numbers and functions, you can "
-         [:a {:data-scroll "" :href "#expl"} "click here"]
+         [:a {:href "#expl"} "click here"]
          " to learn more about them."]
      [:p "This program uses the " [:i "domain coloring"] " method to graph
          complex functions. The graph is a representation of the complex plane:
@@ -17,7 +17,7 @@
          horizontal and vertical position representing the real and imaginary
          components of $z$, respectively. The color of the pixel is determined
          by the value of $f(z)$, where $f$ is the function that is being graphed. "
-         [:a {:data-scroll "" :href "#domain"} "Click here"] " to read more
+         [:a {:href "#domain"} "Click here"] " to read more
          about domain coloring."]]
     [:div {:id "help"}
      [:h2 "Using the Complex Grapher"]
@@ -34,7 +34,7 @@
          (mag)."]
      [:p "The \"Magnitude modulus\" textbox must contain a number greater than
          0. To find out what this value does, please read the section on "
-         [:a {:data-scroll "" :href "#domain"} "domain coloring."]]
+         [:a {:href "#domain"} "domain coloring."]]
      [:p "The \"Top left corner\" label specifies the complex number which is
          represented by the top-left pixel on the graph. The \"Bottom right
          corner\" label does the same for the opposite corner."]

@@ -88,5 +88,5 @@
            :onClick #(reset! graph-state initial-graph-state)}
           "Reset"]]]
        [:div {:class "ctrrow ctrrow-b"}
-        [:a {:data-scroll "" :href "#about"}
+        [:a {:href "#about"}
          [:p {:class "learnmore"} "Learn more"]]]])))

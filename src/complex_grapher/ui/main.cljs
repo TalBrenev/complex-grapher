@@ -1,7 +1,6 @@
 (ns complex-grapher.ui.main
     (:require [reagent.core :as r]
               [reagent.dom :as d]
-              [cljsjs.smooth-scroll]
               [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]
               [complex-grapher.ui.graph :refer [graph]]
               [complex-grapher.ui.controls :refer [controls]]
@@ -30,9 +29,6 @@
           (r/cursor app-state [:last-resize])
           (r/cursor app-state [:graph])]])
 
-(defn setup-smooth-scroll []
-  (.init js/smoothScroll #js {:speed 850}))
-
 (defn setup-resize-listener []
   (.addEventListener js/window
                      "resize"
@@ -42,7 +38,6 @@
   (d/render app (.getElementById js/document "app")))
 
 (defn init []
-  (setup-smooth-scroll)
   (setup-resize-listener)
   (render-app)
   (check-webgl (r/cursor app-state [:webgl?])))
