@@ -14,7 +14,7 @@
                     :graph       {:centre              0
                                   :zoom                0.01
                                   :function            "z"
-                                  :modulus             0.5
+                                  :modulus             1
                                   :top-left-corner     0
                                   :bottom-right-corner 0
                                   :width               0
