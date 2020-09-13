@@ -11,6 +11,7 @@
                      (aset textbox-node "value" new-value)))))
     (fn []
       [:input {:ref #(reset! textbox-node %)
+               :class "textbox"
                :type (if numeric? "number" "textbox")
                :defaultValue @value
                :onInput #(reset! value (-> % (.-target) (.-value)))
