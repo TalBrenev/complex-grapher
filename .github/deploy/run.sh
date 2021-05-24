@@ -5,7 +5,7 @@ set -e
 
 echo "Transferring to S3..."
 
-aws s3 sync ./build "s3://${AWS_S3_BUCKET_NAME}" --delete
+aws s3 sync ./build "s3://${AWS_S3_BUCKET_NAME}" --delete --cache-control max-age=300
 
 echo "Invalidating CloudFront cache..."
 
