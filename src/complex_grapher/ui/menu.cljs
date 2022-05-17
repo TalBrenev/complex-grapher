@@ -6,14 +6,10 @@
   (let [show (r/atom true)]
     (fn []
       [:div {:class "menu"}
-        [:div.row
+        [:div.function
           [:div.input-wrapper
             [:label "Function:"]
             [textbox (r/cursor graph-state [:function])]]]
-        [:div.row
-          [:div.input-wrapper
-            [:label "Magnitude Modulo:"]
-            [textbox (r/cursor graph-state [:modulus])]]]
         [:div.button-wrapper
           [:button {:onClick #(reset! graph-state initial-graph-state)} "Reset"]
           [:button "Help"]

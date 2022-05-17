@@ -30,10 +30,10 @@
 
 (defn- draw-graph [graph-state]
   "Tries graphing the complex function. Throws an exception in case of invalid input."
-  (let [{:keys [function modulus top-left-corner bottom-right-corner]} @graph-state]
+  (let [{:keys [function top-left-corner bottom-right-corner]} @graph-state]
     (webgl/draw canvas-id
                 function
-                modulus
+                1
                 (re top-left-corner)
                 (re bottom-right-corner)
                 (im top-left-corner)
