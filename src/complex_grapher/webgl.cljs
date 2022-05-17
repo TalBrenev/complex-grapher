@@ -213,7 +213,7 @@
      highp float modulus = float(" modulus ");
      highp float h = mod(degrees(atan(f[1], f[0])), 360.0);
      highp float v = mod(mag(f), modulus) / modulus;
-     if (mod(mag(f), 2.0*modulus) > modulus) {
+     if (mod(mag(f), 2.0*modulus) >= modulus) {
        v = 1.0 - v;
      }
      if (mag(f) <= modulus) {
