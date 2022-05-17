@@ -212,9 +212,17 @@
 
      highp float modulus = float(" modulus ");
      highp float h = mod(degrees(atan(f[1], f[0])), 360.0);
-     highp float v = mod(length(f), modulus) / modulus;
+     highp float v = mod(mag(f), modulus) / modulus;
      if (mod(mag(f), 2.0*modulus) > modulus) {
        v = 1.0 - v;
+     }
+     if (mag(f) <= modulus) {
+      v = pow(v, 0.5);
+     }
+     else {
+       v = 2.0*(v-0.6);
+       v = v/pow(pow(v,2.0)+1.0,0.5);
+       v = 0.35*v+0.78;
      }
      gl_FragColor = hsvToRgb(h, 1.0, v);
    }
