@@ -1,0 +1,52 @@
+#info {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: transparentize($black, 0.25);
+  z-index: 100000;
+
+  .info {
+    background-color: $off-white;
+    width: 90%;
+    max-width: $lg;
+    margin: 1rem auto;
+    padding: 1.5rem 2rem;
+    border-radius: 1rem;
+    box-sizing: border-box;
+    max-height: 90vh;
+    height: 100%;
+
+    .info-wrapper {
+      height: 90%;
+      overflow-y: auto;
+    }
+
+    h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    button {
+      display: block;
+      margin: auto;
+      margin-top: 1rem;
+    }
+
+    table {
+      margin: auto;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid $black;
+    }
+    th, td {
+      padding: 0.3rem 0.4rem;
+    }
+  }
+}

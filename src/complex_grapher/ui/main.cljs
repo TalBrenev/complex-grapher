@@ -3,13 +3,16 @@
               [reagent.dom :as d]
               [complex-grapher.ui.no-webgl :refer [no-webgl check-webgl]]
               [complex-grapher.ui.graph :refer [graph]]
-              [complex-grapher.ui.menu :refer [menu]]))
+              [complex-grapher.ui.menu :refer [menu]]
+              [complex-grapher.ui.info :refer [info]]))
 
 (defn get-time []
   (.getTime (js/Date.)))
 
 (def initial-state {:webgl? nil
                     :last-resize (get-time)
+                    :show-about  false
+                    :show-help   false
                     :graph       {:centre              0
                                   :zoom                0.01
                                   :function            "z"
@@ -26,7 +29,12 @@
    [graph (r/cursor app-state [:webgl?])
           (r/cursor app-state [:last-resize])
           (r/cursor app-state [:graph])]
-   [menu (r/cursor app-state [:graph]) (:graph initial-state)]])
+   [menu (r/cursor app-state [:graph])
+         (r/cursor app-state [:show-about])
+         (r/cursor app-state [:show-help])
+         (:graph initial-state)]
+   [info (r/cursor app-state [:show-about])
+         (r/cursor app-state [:show-help])]])
 
 (defn setup-resize-listener []
   (.addEventListener js/window
