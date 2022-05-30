@@ -172,61 +172,72 @@
       (ast->str)))
 
 (defn- fs-src [function modulus left-x right-x top-y bottom-y]
-  (str "
-   varying highp float x;
-   varying highp float y;
+  (let [function (translate-to-glsl function)]
+    (str "
+     varying highp float x;
+     varying highp float y;
 
-   "webgl-utility-funcs"
+     "webgl-utility-funcs"
 
-   "(s/join "\n" (map generate-webgl-func webgl-funcs))"
+     "(s/join "\n" (map generate-webgl-func webgl-funcs))"
 
-   highp vec4 hsvToRgb(highp float h, highp float s, highp float v) {
-     highp float c = s * v;
-     highp float x = c * (1.0 - abs(mod(h/60.0, 2.0) - 1.0));
-     if (0.0 <= h && h <= 60.0) {
-       return vec4(c, x, 0.0, 1.0);
+     highp vec4 hsvToRgb(highp float h, highp float s, highp float v) {
+       highp float c = s * v;
+       highp float x = c * (1.0 - abs(mod(h/60.0, 2.0) - 1.0));
+       if (0.0 <= h && h <= 60.0) {
+         return vec4(c, x, 0.0, 1.0);
+       }
+       else if (0.0 <= h && h <= 120.0) {
+         return vec4(x, c, 0.0, 1.0);
+       }
+       else if (120.0 <= h && h <= 180.0) {
+         return vec4(0.0, c, x, 1.0);
+       }
+       else if (180.0 <= h && h <= 240.0) {
+         return vec4(0.0, x, c, 1.0);
+       }
+       else if (240.0 <= h && h <= 300.0) {
+         return vec4(x, 0.0, c, 1.0);
+       }
+       else {
+         return vec4(c, 0.0, x, 1.0);
+       }
      }
-     else if (0.0 <= h && h <= 120.0) {
-       return vec4(x, c, 0.0, 1.0);
-     }
-     else if (120.0 <= h && h <= 180.0) {
-       return vec4(0.0, c, x, 1.0);
-     }
-     else if (180.0 <= h && h <= 240.0) {
-       return vec4(0.0, x, c, 1.0);
-     }
-     else if (240.0 <= h && h <= 300.0) {
-       return vec4(x, 0.0, c, 1.0);
-     }
-     else {
-       return vec4(c, 0.0, x, 1.0);
-     }
-   }
 
-   void main() {
-     highp vec2 z = vec2(
-       float("(/ (- right-x left-x) 2)") * x + float("(/ (+ left-x right-x) 2)"),
-       float("(/ (- top-y bottom-y) 2)") * y + float("(/ (+ top-y bottom-y) 2)"));
+     void main() {
+       highp vec2 z = vec2(
+         float("(/ (- right-x left-x) 2)") * x + float("(/ (+ left-x right-x) 2)"),
+         float("(/ (- top-y bottom-y) 2)") * y + float("(/ (+ top-y bottom-y) 2)"));
 
-     highp vec2 f = "(translate-to-glsl function)";
+       highp vec2 f = "function";
 
-     highp float modulus = float(" modulus ");
-     highp float h = mod(degrees(atan(f[1], f[0])), 360.0);
-     highp float v = mod(mag(f), modulus) / modulus;
-     if (mod(mag(f), 2.0*modulus) >= modulus) {
-       v = 1.0 - v;
+       bool highRateOfChange = false;
+       z = z + vec2(float("(- right-x left-x)") / 2000.0, float("(- top-y bottom-y)") / 2000.0);
+       highp vec2 f2 = "function";
+       if (length(f2 - f) > 1.5) {
+        highRateOfChange = true;
+       }
+
+       highp float modulus = float(" modulus ");
+       highp float h = mod(degrees(atan(f[1], f[0])), 360.0);
+       highp float v = 0.75;
+       if (!highRateOfChange) {
+         v = mod(mag(f), modulus) / modulus;
+         if (mod(mag(f), 2.0*modulus) >= modulus) {
+           v = 1.0 - v;
+         }
+         if (mag(f) <= modulus) {
+          v = pow(v, 0.5);
+         }
+         else {
+           v = 2.0*(v-0.6);
+           v = v/pow(pow(v,2.0)+1.0,0.5);
+           v = 0.35*v+0.78;
+         }
+       }
+       gl_FragColor = hsvToRgb(h, 1.0, v);
      }
-     if (mag(f) <= modulus) {
-      v = pow(v, 0.5);
-     }
-     else {
-       v = 2.0*(v-0.6);
-       v = v/pow(pow(v,2.0)+1.0,0.5);
-       v = 0.35*v+0.78;
-     }
-     gl_FragColor = hsvToRgb(h, 1.0, v);
-   }
-   "))
+     ")))
 
 (def ^:private vs-src
   "attribute vec4 aVertexPosition;
