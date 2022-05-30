@@ -26,57 +26,59 @@
      [:h3 "Supported Symbols"]
      [:p "The below table describes operations, functions, and constants which can be used when entering a function."]
      [:table
-      [:tr
-       [:th "Symbol"]
-       [:th "Description"]]
-      [:tr
-       [:td "+"]
-       [:td "addition"]]
-      [:tr
-       [:td "-"]
-       [:td "subtraction, additive inverse"]]
-      [:tr
-       [:td "*"]
-       [:td "multiplication"]]
-      [:tr
-       [:td "/"]
-       [:td "division"]]
-      [:tr
-       [:td "^"]
-       [:td "exponentiation"]]
-      [:tr
-       [:td "re"]
-       [:td "real part of complex number"]]
-      [:tr
-       [:td "im"]
-       [:td "imaginary part of complex number"]]
-      [:tr
-       [:td "arg"]
-       [:td "argument of complex number"]]
-      [:tr
-       [:td "mag"]
-       [:td "magnitude of complex number"]]
-      [:tr
-       [:td "sin"]
-       [:td "complex sine"]]
-      [:tr
-       [:td "cos"]
-       [:td "complex cosine"]]
-      [:tr
-       [:td "tan"]
-       [:td "complex tangent"]]
-      [:tr
-       [:td "log, ln"]
-       [:td "complex logarithm"]]
-      [:tr
-       [:td "e"]
-       [:td "Euler's number"]]
-      [:tr
-       [:td "pi"]
-       [:td "3.14159..."]]
-      [:tr
-       [:td "i"]
-       [:td "the imaginary unit"]]]]]
+      [:thead
+       [:tr
+        [:th "Symbol"]
+        [:th "Description"]]]
+      [:tbody
+       [:tr
+        [:td "+"]
+        [:td "addition"]]
+       [:tr
+        [:td "-"]
+        [:td "subtraction, additive inverse"]]
+       [:tr
+        [:td "*"]
+        [:td "multiplication"]]
+       [:tr
+        [:td "/"]
+        [:td "division"]]
+       [:tr
+        [:td "^"]
+        [:td "exponentiation"]]
+       [:tr
+        [:td "re"]
+        [:td "real part of complex number"]]
+       [:tr
+        [:td "im"]
+        [:td "imaginary part of complex number"]]
+       [:tr
+        [:td "arg"]
+        [:td "argument of complex number"]]
+       [:tr
+        [:td "mag"]
+        [:td "magnitude of complex number"]]
+       [:tr
+        [:td "sin"]
+        [:td "complex sine"]]
+       [:tr
+        [:td "cos"]
+        [:td "complex cosine"]]
+       [:tr
+        [:td "tan"]
+        [:td "complex tangent"]]
+       [:tr
+        [:td "log, ln"]
+        [:td "complex logarithm"]]
+       [:tr
+        [:td "e"]
+        [:td "Euler's number"]]
+       [:tr
+        [:td "pi"]
+        [:td "3.14159..."]]
+       [:tr
+        [:td "i"]
+        [:td "the imaginary unit"]]]]]]
    [:button {:onClick back} "Close Help"]])
 
 (defn info [show-about show-help]
