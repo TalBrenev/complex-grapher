@@ -59,6 +59,9 @@
         [:td "mag"]
         [:td "magnitude of complex number"]]
        [:tr
+        [:td "conj"]
+        [:td "complex conjugate"]]
+       [:tr
         [:td "sin"]
         [:td "complex sine"]]
        [:tr

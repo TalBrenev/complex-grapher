@@ -94,6 +94,9 @@
         b (div 1 a)]
     (div (sub a b) (mul i (add a b)))))
 
+(defn conjugate [x] "Computes the complex conjugate of the given complex number."
+  (complex-from-cartesian (re x) (- (im x))))
+
 (defn- _evaluate [transformed-ast z])
 
 (def ^:private token-map
@@ -106,6 +109,7 @@
    :tan    tan
    :log    log
    :negate negate
+   :conj   conjugate
    :z      "z"
    :e      Math/E
    :pi     Math/PI
