@@ -144,6 +144,19 @@
     :args ["z"]
     :body "
           return vec2(z[0],-z[1]);
+          "}
+
+   {:token :man
+    :args ["z"]
+    :body "
+          highp vec2 x = vec2(0.0, 0.0);
+          for (int i = 0; i < 200; i++) {
+            x = vec2(pow(x[0],2.0)-pow(x[1],2.0), 2.0*x[0]*x[1]) + z;
+            if (mag(x) > 2.0) {
+              return toCart(sqrt(float(i)/200.0)*radians(270.0), 1.0);
+            }
+          }
+          return vec2(0.0, 0.0);
           "}])
 
 ;;------------------------------------------------------------------------------;;

@@ -74,6 +74,9 @@
         [:td "log, ln"]
         [:td "complex logarithm"]]
        [:tr
+        [:td "man"]
+        [:td "mandelbrot set visualization"]]
+       [:tr
         [:td "e"]
         [:td "Euler's number"]]
        [:tr

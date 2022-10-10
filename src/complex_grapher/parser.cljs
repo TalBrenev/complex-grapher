@@ -16,6 +16,7 @@
                        {:token "ln"    :type :function   :value :log}
                        {:token "-"     :type :function   :value :negate}
                        {:token "conj"  :type :function   :value :conj}
+                       {:token "man"   :type :function   :value :man}
                        {:token "z"     :type :number     :value :z}
                        {:token "e"     :type :number     :value :e}
                        {:token "pi"    :type :number     :value :pi}

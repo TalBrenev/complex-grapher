@@ -97,6 +97,26 @@
 (defn conjugate [x] "Computes the complex conjugate of the given complex number."
   (complex-from-cartesian (re x) (- (im x))))
 
+(defn mandelbrot [c] "Computes mandelbrot set values."
+  (if-let [i (first
+               (reduce
+                 (fn [[result z] i]
+                   (if result
+                     [result z]
+                     (let [z (add (complex-from-cartesian (- (Math/pow (re z) 2)
+                                                             (Math/pow (im z) 2))
+                                                          (* 2 (re z) (im z)))
+                                  c)]
+                       (if (> (mag z) 2)
+                         [i z]
+                         [nil z]))))
+                 [nil (complex-from-cartesian 0 0)]
+                 (range 200)))]
+    (complex-from-polar (* (Math/sqrt (/ i 200))
+                           (* Math/PI 1.5))
+                        1)
+    (complex-from-cartesian 0 0)))
+
 (defn- _evaluate [transformed-ast z])
 
 (def ^:private token-map
@@ -118,7 +138,8 @@
    :sub    sub
    :mul    mul
    :div    div
-   :pow    pow})
+   :pow    pow
+   :man    mandelbrot})
 
 (defn- evaluate-ast [ast z]
   (cond
